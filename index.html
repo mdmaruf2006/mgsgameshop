@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MGS Games Shop — Preview</title>
 <style>
 :root{--navy:#071523;--lime:#bfff2f;--ink:#17241f;--muted:#718078;--line:#dfe5df;--bg:#f7f8f4;--card:#fff}
@@ -12,6 +12,81 @@ button{font:inherit;cursor:pointer}.header{height:78px;background:#071523;border
 .featurebar{background:#061a2a;color:#fff;display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:18px 7%;border-top:1px solid #18344a;border-bottom:1px solid #18344a}.featurebar div{padding:8px 20px;border-right:1px solid #1c3344;display:grid;grid-template-columns:34px 1fr;column-gap:8px;align-items:center}.featurebar b{font-size:13px}.featurebar small{grid-column:2;color:#9eabb5;font-size:9px;margin-top:2px}.featurebar div:last-child{border-right:0}.section{max-width:1180px;margin:auto;padding:55px 28px}.heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}.heading h2{margin:5px 0;font-size:28px}.muted{color:var(--muted);font-size:12px}.packages{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.pkg{background:#071a2a;color:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;min-height:190px;display:flex;flex-direction:column}.pkg.feature{background:#071a2a;border-color:#294256}.pkg.feature h3{color:#fff}.pkg .icon{width:40px;height:40px;border-radius:50%;background:#102c3d;color:var(--lime);display:grid;place-items:center}.pkg h3{margin:35px 0 7px;font-size:17px}.pkg .bottom{margin-top:auto;border-top:1px solid #294256;padding-top:14px;display:flex;justify-content:space-between}.how{background:#edf0e8}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.step{padding:24px;border-radius:14px;background:#e5eadf;min-height:160px}.step:nth-child(2){background:#f3dfe1}.step:nth-child(3){background:#dce9e1}.step b{color:#78857d;font-size:11px}.step h3{margin-top:40px}.footer{padding:25px 34px;border-top:1px solid var(--line);color:#87938d;font-size:11px}
 .screen{max-width:1180px;margin:auto;padding:55px 28px;min-height:650px}.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:24px;box-shadow:0 6px 25px #16291b08}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.payment{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pay{padding:15px;border:1px solid var(--line);border-radius:11px;background:#f7f9f3}.pay b{display:block;margin-top:8px}.warn{background:#fff7e6;border:1px solid #efd9a8;color:#876a32;padding:14px;border-radius:11px;margin:18px 0;font-size:11px}.input{width:100%;height:42px;border:1px solid var(--line);border-radius:8px;padding:0 11px;margin:7px 0 14px}.screen h1{font-size:38px;margin:8px 0}.hidden{display:none}.back{margin-bottom:15px}
 @media(max-width:760px){.header{padding:0 15px}.nav{display:none}.hero{grid-template-columns:1fr;padding:55px 22px}.hero h1{font-size:43px}.packages,.steps,.grid2,.payment{grid-template-columns:1fr}.section,.screen{padding:40px 18px}.art{height:270px}.maincard{width:92%}}
+
+/* ===== MGS GAMES SHOP — RESPONSIVE MOBILE + PC ===== */
+html, body { width:100%; min-width:0; overflow-x:hidden; }
+body { -webkit-text-size-adjust:100%; }
+img, video { max-width:100%; height:auto; }
+button, input, select, textarea { max-width:100%; }
+
+@media (max-width:900px) {
+  .header { height:auto; min-height:68px; padding:10px 16px; gap:10px; flex-wrap:wrap; }
+  .brand { flex:1; }
+  .login { padding:9px 12px; }
+  .hero { grid-template-columns:1fr; min-height:auto; padding:55px 28px; }
+  .hero h1 { font-size:clamp(34px,6vw,48px); }
+  .art { display:none; }
+  .featurebar { grid-template-columns:repeat(2,1fr); padding:14px; }
+  .featurebar div:nth-child(2n) { border-right:0; }
+  .packages { grid-template-columns:repeat(2,1fr); }
+}
+
+@media (max-width:600px) {
+  .header { position:sticky; top:0; width:100%; padding:9px 12px; gap:8px; }
+  .brand { font-size:16px; min-width:0; }
+  .mark { width:34px; height:34px; border-radius:9px; font-size:18px; flex:0 0 34px; }
+  .brand small { font-size:8px; }
+  .login { font-size:11px; padding:8px 10px; white-space:nowrap; }
+
+  .nav {
+    display:flex; order:3; width:100%; flex:0 0 100%;
+    overflow-x:auto; gap:5px; padding:2px 0 3px; scrollbar-width:none;
+  }
+  .nav::-webkit-scrollbar { display:none; }
+  .nav button { flex:0 0 auto; white-space:nowrap; font-size:11px; padding:9px 11px; }
+
+  .hero { padding:42px 16px 38px; min-height:0; background-position:center; }
+  .hero h1 { font-size:clamp(31px,9vw,42px); line-height:1.1; margin:12px 0; }
+  .hero p { font-size:13px; line-height:1.65; }
+  .actions { flex-direction:column; width:100%; }
+  .actions .btn { width:100%; min-height:45px; }
+
+  .featurebar { grid-template-columns:1fr 1fr; gap:0; padding:8px; }
+  .featurebar div {
+    min-width:0; padding:12px 8px; grid-template-columns:27px 1fr;
+    border-bottom:1px solid #1c3344; border-right:1px solid #1c3344;
+  }
+  .featurebar div:nth-child(2n) { border-right:0; }
+  .featurebar div:last-child { grid-column:1 / -1; border-right:0; }
+  .featurebar b { font-size:11px; }
+  .featurebar small { font-size:8px; }
+
+  .section, .screen { width:100%; max-width:100%; padding:34px 14px; }
+  .heading { align-items:flex-start; }
+  .heading h2 { font-size:23px; }
+  .screen h1 { font-size:30px; line-height:1.15; }
+
+  .packages, .steps, .grid2, .payment { grid-template-columns:1fr; width:100%; }
+  .pkg { width:100%; min-height:165px; padding:17px; }
+  .pkg h3 { margin-top:25px; font-size:16px; }
+
+  .panel { width:100%; padding:16px; overflow:hidden; }
+  .panel h2 { font-size:20px; }
+  .pay { width:100%; overflow-wrap:anywhere; }
+  .input { width:100%; font-size:16px; }
+  .btn { min-height:43px; }
+  .footer { padding:20px 14px; text-align:center; }
+}
+
+@media (max-width:380px) {
+  .brandText { font-size:14px; }
+  .login { font-size:10px; padding:7px 8px; }
+  .hero { padding-left:13px; padding-right:13px; }
+  .section, .screen { padding-left:11px; padding-right:11px; }
+  .featurebar { grid-template-columns:1fr; }
+  .featurebar div, .featurebar div:last-child { grid-column:auto; border-right:0; }
+}
+
 </style>
 </head>
 <body>
