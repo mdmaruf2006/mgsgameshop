@@ -3,83 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MGS Games Shop - Admin</title>
+<title>MGS Games Shop - Admin Panel</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#fff;font-family:Arial,"Noto Sans Bengali",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#080d18;color:#fff;font-family:Arial,"Noto Sans Bengali",sans-serif}
+button,input{font:inherit}button{cursor:pointer}
+.top{background:#0d1424;border-bottom:1px solid #263653;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:20px;font-weight:800}.logout{background:#ef4444;color:#fff;border:0;border-radius:9px;padding:9px 13px}
+.wrap{max-width:1150px;margin:auto;padding:20px}
+.card{background:#111a2d;border:1px solid #293b60;border-radius:16px;padding:20px;margin-bottom:18px}
+h1,h2,h3{margin-top:0}.muted{color:#95a4bf;font-size:13px}
 .login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.box{width:100%;max-width:400px;background:#111a2d;border:1px solid #30446e;border-radius:18px;padding:25px;box-shadow:0 15px 50px #0008}
-h1{text-align:center;font-size:22px;margin:0 0 8px}
-p{text-align:center;color:#9eabc4;margin:0 0 25px}
-label{display:block;margin:10px 0 7px;color:#c5cee0;font-size:14px}
-input{width:100%;padding:13px;border-radius:10px;border:1px solid #3a4d76;background:#091222;color:#fff;font-size:16px;outline:none}
-button{width:100%;margin-top:16px;padding:13px;border:0;border-radius:10px;background:#5b7cff;color:#fff;font-weight:bold;font-size:15px;cursor:pointer}
-#error{color:#ff7777;text-align:center;margin-top:12px;font-size:14px}
-#panel{display:none;min-height:100vh}
-header{padding:15px 18px;background:#10192b;border-bottom:1px solid #273858;display:flex;justify-content:space-between;align-items:center}
-header b{font-size:19px}
-.logout{width:auto;margin:0;background:#ef4444;padding:9px 14px}
-main{max-width:1100px;margin:auto;padding:20px}
-.card{background:#111a2d;border:1px solid #293a60;border-radius:15px;padding:20px;margin-bottom:18px}
-h2{margin:0 0 8px;font-size:18px}
-.muted{color:#94a2bb;font-size:13px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:12px}}
+.loginbox{width:100%;max-width:400px;background:#111a2d;border:1px solid #30446d;border-radius:18px;padding:25px}
+.loginbox h2{text-align:center}.loginbox p{text-align:center;color:#9eabc4}
+label{display:block;color:#b8c4da;font-size:13px;margin:12px 0 6px}
+input{width:100%;padding:11px 12px;background:#091222;border:1px solid #34486f;color:#fff;border-radius:9px;outline:none}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700}.primary{background:#5b7cff;color:#fff}.success{background:#22c55e;color:#07120c}.danger{background:#ef4444;color:#fff}.dark{background:#273754;color:#fff}
+.full{width:100%;margin-top:15px}.error{color:#ff7777;text-align:center;margin-top:10px;font-size:13px}
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cat{background:#172541;border:1px solid #31476f;border-radius:14px;padding:20px;text-align:left;color:#fff;min-height:90px}
+.cat:hover{border-color:#6d8cff;background:#1b2c4d}.cat b{display:block;font-size:17px;margin-bottom:6px}.cat span{color:#91a2bf;font-size:12px}
+.back{margin-bottom:15px}.hidden{display:none!important}
+.package{background:#0b1323;border:1px solid #293b5c;border-radius:12px;padding:14px;margin-top:11px}
+.package-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.package-name{font-weight:700}.package-info{color:#a9b7ce;font-size:13px;margin-top:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions .btn{width:auto}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.notice{background:#172541;color:#b9c8e5;padding:10px;border-radius:9px;font-size:12px;margin-top:12px}
+@media(max-width:700px){.categories{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.wrap{padding:12px}.brand{font-size:16px}}
+@media(max-width:430px){.categories{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div id="login" class="login">
-  <div class="box">
-    <h1>🎮 MGS Games Shop</h1>
-    <p>Admin Panel Login</p>
-    <label>Admin Password</label>
-    <input id="adminPassword" type="password" placeholder="Enter your password" autocomplete="off">
-    <button type="button" onclick="adminLogin()">Login to Admin Panel</button>
-    <div id="error"></div>
-  </div>
+ <div class="loginbox">
+  <h2>🎮 MGS Games Shop</h2>
+  <p>Admin Panel Login</p>
+  <label>Admin Password</label>
+  <input id="adminPass" type="password" placeholder="Enter your password">
+  <button class="btn primary full" onclick="login()">Login to Admin Panel</button>
+  <div id="loginError" class="error"></div>
+ </div>
 </div>
 
-<div id="panel">
-<header>
-  <b>🎮 MGS Games Shop — Admin</b>
-  <button class="logout" onclick="adminLogout()">Logout</button>
+<div id="panel" class="hidden">
+<header class="top">
+ <div class="brand">🎮 MGS Games Shop — Admin</div>
+ <button class="logout" onclick="logout()">Logout</button>
 </header>
-<main>
-  <div class="grid">
-    <div class="card"><h2>💳 Payment Settings</h2><div class="muted">bKash / Nagad নম্বর পরিবর্তনের জায়গা</div></div>
-    <div class="card"><h2>📦 Package Management</h2><div class="muted">Package, Diamond ও Price management</div></div>
-    <div class="card"><h2>🧾 Orders</h2><div class="muted">Customer orders ও order status</div></div>
-    <div class="card"><h2>👥 Customers</h2><div class="muted">Customer account information</div></div>
+
+<main class="wrap">
+ <section id="home" class="card">
+  <h2>Package Management</h2>
+  <p class="muted">নিচের একটি category-তে ঢুকে সেই category-এর package list দেখুন বা নতুন package যোগ করুন।</p>
+  <div class="categories">
+   <button class="cat" onclick="openCategory('weekly')"><b>Weekly</b><span>Weekly package list</span></button>
+   <button class="cat" onclick="openCategory('monthly')"><b>Monthly</b><span>Monthly package list</span></button>
+   <button class="cat" onclick="openCategory('levelup')"><b>Level Up Pass</b><span>Level Up package list</span></button>
+   <button class="cat" onclick="openCategory('event')"><b>Special Event</b><span>Event package list</span></button>
+   <button class="cat" onclick="openCategory('airdrop')"><b>Airdrop</b><span>Airdrop package list</span></button>
   </div>
+  <div class="notice">এখানে category button-এ কোনো দাম দেখানো হচ্ছে না। দাম/diamond শুধু ভিতরের package-এ থাকবে।</div>
+ </section>
+
+ <section id="categoryPage" class="card hidden">
+  <button class="btn dark back" onclick="goHome()">← Back to Categories</button>
+  <h2 id="categoryTitle"></h2>
+  <p class="muted">এই category-এর package list</p>
+  <div id="packageList"></div>
+  <div class="actions">
+   <button class="btn success" onclick="showAddForm()">+ Add Package</button>
+  </div>
+  <div id="addForm" class="package hidden">
+   <h3>New Package</h3>
+   <label>Package Name</label><input id="newName" placeholder="Package name">
+   <div class="row">
+    <div><label>Diamond / Reward</label><input id="newReward" placeholder="যেমন 80 Diamonds"></div>
+    <div><label>Price (৳)</label><input id="newPrice" placeholder="যেমন 45"></div>
+   </div>
+   <div class="actions">
+    <button class="btn success" onclick="addPackage()">Add Package</button>
+    <button class="btn dark" onclick="hideAddForm()">Cancel</button>
+   </div>
+  </div>
+ </section>
+
+ <section class="card">
+  <h2>💳 Payment Settings</h2>
+  <p class="muted">bKash/Nagad customer payment number</p>
+  <div class="row">
+   <div><label>bKash Personal Number</label><input id="bkash" placeholder="01XXXXXXXXX"></div>
+   <div><label>Nagad Personal Number</label><input id="nagad" placeholder="01XXXXXXXXX"></div>
+  </div>
+  <button class="btn success" style="margin-top:14px" onclick="savePayment()">Save Changes</button>
+ </section>
+
+ <section class="card">
+  <h2>🧾 Orders</h2>
+  <p class="muted">Customer orders management</p>
+  <div class="notice">Orders-এর real-time data চালাতে backend/database প্রয়োজন।</div>
+ </section>
+
+ <section class="card">
+  <h2>👥 Customers</h2>
+  <p class="muted">Customer management</p>
+  <div class="notice">Customers-এর real-time data চালাতে backend/database প্রয়োজন।</div>
+ </section>
 </main>
 </div>
 
 <script>
-function adminLogin(){
-  const password = document.getElementById("adminPassword").value;
-  if(password === "MARUF@18334341"){
-    document.getElementById("login").style.display="none";
-    document.getElementById("panel").style.display="block";
-    sessionStorage.setItem("mgs_admin_logged_in","yes");
-    document.getElementById("error").textContent="";
-  }else{
-    document.getElementById("error").textContent="আপনার পাসওয়ার্ডটি সঠিক নয়।";
-  }
+const ADMIN_PASSWORD="MARUF@18334341";
+const names={weekly:"Weekly",monthly:"Monthly",levelup:"Level Up Pass",event:"Special Event",airdrop:"Airdrop"};
+const defaults={
+ weekly:[
+  {name:"Weekly Lite Membership",reward:"80 Diamonds",price:"45"},
+  {name:"Weekly Membership",reward:"450 Diamonds",price:"190"}
+ ],
+ monthly:[{name:"Monthly Membership",reward:"2600 Diamonds",price:"750"}],
+ levelup:[{name:"Level Up Pass",reward:"Special Reward",price:"170"}],
+ event:[{name:"Special Event",reward:"Event Package",price:"99"}],
+ airdrop:[{name:"Airdrop",reward:"Limited Package",price:"60"}]
+};
+let current="weekly";
+
+function login(){
+ if(document.getElementById("adminPass").value===ADMIN_PASSWORD){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("panel").classList.remove("hidden");
+  loadPayment();
+ }else document.getElementById("loginError").textContent="আপনার পাসওয়ার্ডটি সঠিক নয়।";
 }
-function adminLogout(){
-  sessionStorage.removeItem("mgs_admin_logged_in");
-  document.getElementById("panel").style.display="none";
-  document.getElementById("login").style.display="flex";
-  document.getElementById("adminPassword").value="";
+function logout(){location.reload()}
+function key(k){return "mgs_"+k+"_packages"}
+function getPackages(k){
+ try{let x=JSON.parse(localStorage.getItem(key(k)));return Array.isArray(x)?x:defaults[k].map(x=>({...x}))}catch(e){return defaults[k].map(x=>({...x}))}
 }
-document.getElementById("adminPassword").addEventListener("keydown",function(e){
-  if(e.key==="Enter") adminLogin();
-});
-if(sessionStorage.getItem("mgs_admin_logged_in")==="yes"){
-  document.getElementById("login").style.display="none";
-  document.getElementById("panel").style.display="block";
+function saveList(k,a){localStorage.setItem(key(k),JSON.stringify(a))}
+function openCategory(k){
+ current=k;
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("categoryPage").classList.remove("hidden");
+ document.getElementById("categoryTitle").textContent=names[k]+" Packages";
+ hideAddForm();render();
 }
+function goHome(){document.getElementById("categoryPage").classList.add("hidden");document.getElementById("home").classList.remove("hidden")}
+function render(){
+ const box=document.getElementById("packageList"),a=getPackages(current);box.innerHTML="";
+ if(!a.length){box.innerHTML='<div class="notice">এই category-তে এখন কোনো package নেই। + Add Package চাপুন।</div>';return}
+ a.forEach((p,i)=>{
+  box.innerHTML+=`<div class="package">
+   <div class="package-head"><span class="package-name">${esc(p.name)}</span><button class="btn danger" onclick="removePackage(${i})">Delete</button></div>
+   <div class="package-info">${esc(p.reward)}${p.price!==""?" • ৳"+esc(p.price):""}</div>
+  </div>`;
+ });
+}
+function showAddForm(){document.getElementById("addForm").classList.remove("hidden")}
+function hideAddForm(){document.getElementById("addForm").classList.add("hidden")}
+function addPackage(){
+ const name=document.getElementById("newName").value.trim(),reward=document.getElementById("newReward").value.trim(),price=document.getElementById("newPrice").value.trim();
+ if(!name){alert("Package Name দিন");return}
+ const a=getPackages(current);a.push({name,reward,price});saveList(current,a);
+ document.getElementById("newName").value="";document.getElementById("newReward").value="";document.getElementById("newPrice").value="";
+ hideAddForm();render();
+}
+function removePackage(i){const a=getPackages(current);a.splice(i,1);saveList(current,a);render()}
+function savePayment(){localStorage.setItem("mgs_bkash",document.getElementById("bkash").value.trim());localStorage.setItem("mgs_nagad",document.getElementById("nagad").value.trim());alert("Payment settings এই browser-এ save হয়েছে।")}
+function loadPayment(){document.getElementById("bkash").value=localStorage.getItem("mgs_bkash")||"";document.getElementById("nagad").value=localStorage.getItem("mgs_nagad")||""}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+document.getElementById("adminPass").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 </script>
 </body>
 </html>
