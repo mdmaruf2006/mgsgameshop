@@ -56,11 +56,12 @@ input{width:100%;padding:11px 12px;background:#091222;border:1px solid #34486f;c
   <h2>Package Management</h2>
   <p class="muted">নিচের একটি category-তে ঢুকে সেই category-এর package list দেখুন বা নতুন package যোগ করুন।</p>
   <div class="categories">
-   <button class="cat" onclick="openCategory('weekly')"><b>Weekly</b><span>Weekly package list</span></button>
-   <button class="cat" onclick="openCategory('monthly')"><b>Monthly</b><span>Monthly package list</span></button>
-   <button class="cat" onclick="openCategory('levelup')"><b>Level Up Pass</b><span>Level Up package list</span></button>
-   <button class="cat" onclick="openCategory('event')"><b>Special Event</b><span>Event package list</span></button>
-   <button class="cat" onclick="openCategory('airdrop')"><b>Airdrop</b><span>Airdrop package list</span></button>
+   <button class="cat" onclick="openCategory('weeklylite')"><b>Weekly Lite Membership</b><span>Package list</span></button>
+   <button class="cat" onclick="openCategory('weekly')"><b>Weekly Membership</b><span>Package list</span></button>
+   <button class="cat" onclick="openCategory('monthly')"><b>Monthly Membership</b><span>Package list</span></button>
+   <button class="cat" onclick="openCategory('levelup')"><b>Level Up Pass</b><span>Package list</span></button>
+   <button class="cat" onclick="openCategory('event')"><b>Special Event</b><span>Package list</span></button>
+   <button class="cat" onclick="openCategory('airdrop')"><b>Airdrop</b><span>Package list</span></button>
   </div>
   <div class="notice">এখানে category button-এ কোনো দাম দেখানো হচ্ছে না। দাম/diamond শুধু ভিতরের package-এ থাকবে।</div>
  </section>
@@ -113,8 +114,9 @@ input{width:100%;padding:11px 12px;background:#091222;border:1px solid #34486f;c
 
 <script>
 const ADMIN_PASSWORD="MARUF@18334341";
-const names={weekly:"Weekly",monthly:"Monthly",levelup:"Level Up Pass",event:"Special Event",airdrop:"Airdrop"};
+const names={weeklylite:"Weekly Lite Membership",weekly:"Weekly Membership",monthly:"Monthly Membership",levelup:"Level Up Pass",event:"Special Event",airdrop:"Airdrop"};
 const defaults={
+ weeklylite:[{name:"Weekly Lite Membership",reward:"80 Diamonds",price:"45"}],
  weekly:[
   {name:"Weekly Lite Membership",reward:"80 Diamonds",price:"45"},
   {name:"Weekly Membership",reward:"450 Diamonds",price:"190"}
