@@ -87,7 +87,32 @@ button, input, select, textarea { max-width:100%; }
   .featurebar div, .featurebar div:last-child { grid-column:auto; border-right:0; }
 }
 
+
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}.auth-overlay.show{display:flex}.auth-modal{width:min(430px,100%);background:#111827;border:1px solid #334155;border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,.55);padding:22px}.auth-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.auth-head h2{margin:0;font-size:22px}.auth-close{background:none;border:0;color:#94a3b8;font-size:25px;cursor:pointer}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:#0b1220;border-radius:12px;padding:4px;margin-bottom:18px}.auth-tabs button{border:0;background:transparent;color:#94a3b8;padding:10px;border-radius:9px;font-weight:700;cursor:pointer}.auth-tabs button.active{background:#2563eb;color:#fff}.auth-form{display:none}.auth-form.active{display:block}.auth-form label{display:block;color:#cbd5e1;font-size:13px;margin:11px 0 6px}.auth-form input{width:100%;box-sizing:border-box;background:#0b1220;border:1px solid #334155;color:#fff;border-radius:10px;padding:12px;font-size:16px;outline:none}.auth-form input:focus{border-color:#3b82f6}.auth-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.auth-submit{width:100%;margin-top:17px;border:0;border-radius:10px;padding:12px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}.forgot{display:block;text-align:right;margin-top:10px;color:#60a5fa;font-size:13px;cursor:pointer}.auth-note{font-size:12px;color:#94a3b8;text-align:center;margin:13px 0 0;line-height:1.5}.auth-msg{font-size:13px;margin-top:10px;color:#fbbf24}.reset-step{display:none}.reset-step.active{display:block}@media(max-width:600px){.auth-modal{padding:18px;border-radius:16px}.auth-row{grid-template-columns:1fr}}
 </style>
+
+<style id="account-ui-fix">
+.forgot-link{
+  display:inline-block;
+  margin-top:8px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#9ca3af;
+  font-size:13px;
+  line-height:1.4;
+  text-decoration:none;
+  cursor:pointer;
+}
+.forgot-link:hover{
+  color:#fff;
+  text-decoration:underline;
+}
+.auth-actions{
+  text-align:center;
+}
+</style>
+
 </head>
 <body>
 <header class="header">
@@ -99,7 +124,7 @@ button, input, select, textarea { max-width:100%; }
 <button id="n-orders" onclick="show('orders')">▣ &nbsp;Orders</button>
 <button id="n-profile" onclick="show('profile')">● &nbsp;Profile</button>
 <button id="n-admin" onclick="show('admin')">☰ &nbsp;Admin</button>
-</nav><button class="login">Create account →</button>
+</nav><button class="login" onclick="openAuth('signup')">Create account →</button>
 </header>
 
 <section id="home" class="page">
@@ -136,5 +161,43 @@ button, input, select, textarea { max-width:100%; }
 const pages=['home','packages','package','wallet','orders','profile','admin'];
 function show(id){pages.forEach(p=>document.getElementById(p).classList.toggle('hidden',p!==id));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));let map={home:'n-home',packages:'n-packages',wallet:'n-wallet',orders:'n-orders',profile:'n-profile',admin:'n-admin'};if(map[id])document.getElementById(map[id]).classList.add('active');scrollTo(0,0)}
 function showPackage(name){document.getElementById('packageTitle').textContent=name;show('package')}
+</script>
+
+<div id="authOverlay" class="auth-overlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-modal">
+    <div class="auth-head"><h2 id="authTitle">Create Account</h2><button class="auth-close" onclick="closeAuth()">×</button></div>
+    <div class="auth-tabs"><button id="tabSignin" onclick="switchAuth('signin')">Sign In</button><button id="tabSignup" onclick="switchAuth('signup')">Sign Up</button></div>
+    <div id="signinForm" class="auth-form">
+      <label>Email</label><input id="loginEmail" type="email" placeholder="Enter your email">
+      <label>Password</label><input id="loginPassword" type="password" placeholder="Enter your password">
+      <span class="forgot" onclick="showReset()">Forgot password?</span>
+      <button class="auth-submit" onclick="demoSignin()">Sign In</button>
+      <div id="signinMsg" class="auth-msg"></div>
+    </div>
+    <div id="signupForm" class="auth-form">
+      <div class="auth-row"><div><label>First Name</label><input id="firstName" type="text" placeholder="First name"></div><div><label>Last Name</label><input id="lastName" type="text" placeholder="Last name"></div></div>
+      <label>Email</label><input id="signupEmail" type="email" placeholder="Enter your email">
+      <label>Password</label><input id="signupPassword" type="password" placeholder="Create a password">
+      <label>Date of Birth</label><input id="dob" type="date">
+      <button class="auth-submit" onclick="demoSignup()">Create Account</button>
+      <div id="signupMsg" class="auth-msg"></div>
+    </div>
+    <div id="resetForm" class="auth-form">
+      <div id="resetEmailStep" class="reset-step active"><label>Email</label><input id="resetEmail" type="email" placeholder="Enter your account email"><button class="auth-submit" onclick="sendResetCode()">Send Code</button></div>
+      <div id="resetCodeStep" class="reset-step"><label>Email Code</label><input id="resetCode" type="text" inputmode="numeric" placeholder="Enter code"><label>New Password</label><input id="newPassword" type="password" placeholder="New password"><button class="auth-submit" onclick="finishReset()">Change Password</button></div>
+      <span class="forgot" onclick="switchAuth('signin')">← Back to Sign In</span><div id="resetMsg" class="auth-msg"></div>
+    </div>
+    <p class="auth-note">Demo interface: real account creation, email codes and password reset require a backend/email service.</p>
+  </div>
+</div>
+<script>
+function openAuth(mode){document.getElementById('authOverlay').classList.add('show');switchAuth(mode)}
+function closeAuth(){document.getElementById('authOverlay').classList.remove('show')}
+function switchAuth(mode){['signinForm','signupForm','resetForm'].forEach(id=>document.getElementById(id).classList.remove('active'));document.getElementById('signinForm').classList.toggle('active',mode==='signin');document.getElementById('signupForm').classList.toggle('active',mode==='signup');document.getElementById('resetForm').classList.toggle('active',mode==='reset');document.getElementById('tabSignin').classList.toggle('active',mode==='signin');document.getElementById('tabSignup').classList.toggle('active',mode==='signup');document.getElementById('authTitle').textContent=mode==='signin'?'Sign In':mode==='signup'?'Create Account':'Reset Password'}
+function showReset(){switchAuth('reset');document.getElementById('resetEmailStep').classList.add('active');document.getElementById('resetCodeStep').classList.remove('active')}
+function sendResetCode(){document.getElementById('resetEmailStep').classList.remove('active');document.getElementById('resetCodeStep').classList.add('active');document.getElementById('resetMsg').textContent='A verification code would be sent to this email.'}
+function finishReset(){document.getElementById('resetMsg').textContent='Password reset flow completed in this demo interface.'}
+function demoSignin(){document.getElementById('signinMsg').textContent='Demo mode: connect a backend to verify the email and password.'}
+function demoSignup(){document.getElementById('signupMsg').textContent='Demo mode: connect a backend to create and save the account.'}
 </script>
 </body></html>
