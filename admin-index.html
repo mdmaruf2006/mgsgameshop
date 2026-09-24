@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MGS Games Shop — Admin Panel</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:#080d18;color:#eef3ff}
+button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at top,#16254b,#080d18 55%)}
+.login-card{width:min(420px,100%);background:#111a2d;border:1px solid #26375d;border-radius:20px;padding:28px;box-shadow:0 20px 60px #0008}
+.logo{font-size:24px;font-weight:800;text-align:center;margin-bottom:8px}.sub{text-align:center;color:#9eabc4;margin-bottom:25px}
+label{display:block;font-size:14px;color:#b9c4da;margin:15px 0 7px}input,select{width:100%;padding:12px 13px;border-radius:10px;border:1px solid #34466d;background:#0b1323;color:#fff;outline:none}
+input:focus,select:focus{border-color:#6d8cff}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:700}.primary{background:#5b7cff;color:white;width:100%;margin-top:20px}.danger{background:#ef4444;color:#fff}.success{background:#22c55e;color:#07120b}.muted{background:#273552;color:#fff}.error{color:#ff7b7b;text-align:center;margin-top:12px;font-size:14px}
+.app{min-height:100vh}.top{position:sticky;top:0;z-index:5;background:#0d1424ee;backdrop-filter:blur(12px);border-bottom:1px solid #22304e;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:20px;font-weight:800}.admin-tag{font-size:11px;background:#27385d;padding:5px 8px;border-radius:20px;color:#bcd0ff;margin-left:8px}
+.wrap{max-width:1200px;margin:auto;padding:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{background:#111a2d;border:1px solid #26375d;border-radius:16px;padding:20px}.wide{grid-column:1/-1}.card h2{margin:0 0 6px;font-size:19px}.hint{color:#91a0bb;font-size:13px;margin-bottom:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.actions .btn{width:auto}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #26334f;font-size:13px}th{color:#aebbd3}.badge{padding:5px 8px;border-radius:20px;font-size:11px;background:#293957}.pending{color:#ffd166}.ok{color:#5ee39a}.stat{display:flex;justify-content:space-between;align-items:center;padding:13px;background:#0b1323;border-radius:10px;margin-top:10px}.stat b{font-size:20px}.package{border:1px solid #2b3b5e;border-radius:12px;padding:13px;margin-top:10px}.package strong{display:block;margin-bottom:5px}.package small{color:#94a3bd}.footer{text-align:center;color:#66748e;font-size:12px;padding:25px}
+.notice{padding:11px 13px;border-radius:10px;background:#172541;color:#b9c9ea;font-size:13px;margin-top:12px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.row{grid-template-columns:1fr}.wrap{padding:12px}.top{padding:12px}.brand{font-size:17px}.top .danger{padding:9px 11px;font-size:13px}}
+</style>
+</head>
+<body>
+
+<section id="login" class="login">
+  <div class="login-card">
+    <div class="logo">🎮 MGS Games Shop</div>
+    <div class="sub">Admin Panel</div>
+    <label>Enter your login password</label>
+    <input id="password" type="password" placeholder="Admin password" autocomplete="current-password">
+    <button class="btn primary" onclick="login()">Login to Admin Panel</button>
+    <div id="loginError" class="error"></div>
+    <div class="notice">শুধু Admin-এর জন্য। Customer website থেকে এই প্যানেল আলাদা।</div>
+  </div>
+</section>
+
+<section id="app" class="app hidden">
+  <header class="top">
+    <div><span class="brand">🎮 MGS Games Shop</span><span class="admin-tag">ADMIN</span></div>
+    <button class="btn danger" onclick="logout()">Logout</button>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+
+      <section class="card">
+        <h2>💳 Payment Settings</h2>
+        <div class="hint">Customer-কে দেখানোর bKash ও Nagad নম্বর</div>
+        <label>bKash Personal Number</label>
+        <input id="bkash" placeholder="01XXXXXXXXX">
+        <label>Nagad Personal Number</label>
+        <input id="nagad" placeholder="01XXXXXXXXX">
+        <div class="actions">
+          <button class="btn success" onclick="saveSettings()">Save Changes</button>
+        </div>
+        <div id="settingsMsg" class="notice hidden"></div>
+      </section>
+
+      <section class="card">
+        <h2>📦 Package Management</h2>
+        <div class="hint">Package-এর নাম, Diamond/Reward এবং দাম</div>
+        <div id="packages"></div>
+        <div class="actions">
+          <button class="btn muted" onclick="addPackage()">+ Add Package</button>
+          <button class="btn success" onclick="savePackages()">Save Packages</button>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <h2>🧾 Orders</h2>
+        <div class="hint">Customer-এর order দেখা ও status পরিবর্তনের জন্য</div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Order ID</th><th>Package</th><th>UID</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="orders"></tbody></table>
+        </div>
+        <div class="notice">এটি বর্তমানে static admin interface। GitHub Pages-এ আসল order database না থাকায় এখানে customer-এর real-time order আসবে না।</div>
+      </section>
+
+      <section class="card wide">
+        <h2>👥 Customers</h2>
+        <div class="hint">Registered customer-এর তথ্য</div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Status</th></tr></thead>
+          <tbody id="customers"></tbody></table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>📊 Dashboard</h2>
+        <div class="stat"><span>Total Packages</span><b id="packageCount">0</b></div>
+        <div class="stat"><span>Orders</span><b>0</b></div>
+        <div class="stat"><span>Customers</span><b>0</b></div>
+      </section>
+
+      <section class="card">
+        <h2>⚙️ Admin Info</h2>
+        <div class="hint">Admin URL-এ ঢুকলে প্রথমে এই password screen দেখা যাবে।</div>
+        <div class="notice">নোট: এই password এখন demo/static password। নিরাপদ real admin authentication ও database-এর জন্য backend লাগবে।</div>
+      </section>
+
+    </div>
+    <div class="footer">MGS Games Shop Admin Panel</div>
+  </main>
+</section>
+
+<script>
+const ADMIN_PASSWORD="CHANGE_THIS_ADMIN_PASSWORD";
+
+const defaultPackages=[
+ {name:"Weekly Lite Membership",reward:"80 Diamonds",price:"45"},
+ {name:"Weekly Membership",reward:"450 Diamonds",price:"190"},
+ {name:"Monthly Membership",reward:"2600 Diamonds",price:"750"},
+ {name:"Level Up Pass",reward:"Special Reward",price:"170"},
+ {name:"Special Event",reward:"Event Package",price:"99"},
+ {name:"Airdrop",reward:"Limited Package",price:"60"}
+];
+
+function login(){
+ const p=document.getElementById("password").value;
+ if(p===ADMIN_PASSWORD){
+   sessionStorage.setItem("mgsAdmin","1");
+   showApp();
+ }else{
+   document.getElementById("loginError").textContent="Password সঠিক নয়।";
+ }
+}
+function logout(){
+ sessionStorage.removeItem("mgsAdmin");
+ document.getElementById("app").classList.add("hidden");
+ document.getElementById("login").classList.remove("hidden");
+ document.getElementById("password").value="";
+}
+function showApp(){
+ document.getElementById("login").classList.add("hidden");
+ document.getElementById("app").classList.remove("hidden");
+ loadSettings();renderPackages();renderOrders();renderCustomers();
+}
+function loadSettings(){
+ document.getElementById("bkash").value=localStorage.getItem("mgsBkash")||"";
+ document.getElementById("nagad").value=localStorage.getItem("mgsNagad")||"";
+}
+function saveSettings(){
+ localStorage.setItem("mgsBkash",document.getElementById("bkash").value.trim());
+ localStorage.setItem("mgsNagad",document.getElementById("nagad").value.trim());
+ const m=document.getElementById("settingsMsg");m.textContent="Settings এই browser-এ save হয়েছে।";m.classList.remove("hidden");
+}
+function getPackages(){
+ try{return JSON.parse(localStorage.getItem("mgsPackages"))||defaultPackages}catch(e){return defaultPackages}
+}
+function renderPackages(){
+ const box=document.getElementById("packages");box.innerHTML="";
+ getPackages().forEach((p,i)=>{
+  box.innerHTML+=`<div class="package">
+   <label>Package ${i+1} Name</label><input data-p="${i}" data-k="name" value="${esc(p.name)}">
+   <div class="row"><div><label>Diamond / Reward</label><input data-p="${i}" data-k="reward" value="${esc(p.reward)}"></div>
+   <div><label>Price (৳)</label><input data-p="${i}" data-k="price" value="${esc(p.price)}"></div></div>
+  </div>`;
+ });
+ document.getElementById("packageCount").textContent=getPackages().length;
+}
+function addPackage(){
+ const a=getPackages();a.push({name:"New Package",reward:"0 Diamonds",price:"0"});localStorage.setItem("mgsPackages",JSON.stringify(a));renderPackages();
+}
+function savePackages(){
+ const a=getPackages();
+ document.querySelectorAll("[data-p]").forEach(el=>a[+el.dataset.p][el.dataset.k]=el.value);
+ localStorage.setItem("mgsPackages",JSON.stringify(a));
+ alert("Packages এই browser-এ save হয়েছে।");
+}
+function renderOrders(){
+ document.getElementById("orders").innerHTML='<tr><td colspan="6">কোনো order data পাওয়া যায়নি</td></tr>';
+}
+function renderCustomers(){
+ document.getElementById("customers").innerHTML='<tr><td colspan="4">কোনো customer data পাওয়া যায়নি</td></tr>';
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+document.getElementById("password").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+if(sessionStorage.getItem("mgsAdmin")==="1")showApp();
+</script>
+</body>
+</html>
