@@ -6,19 +6,26 @@
 <title>MGS Games Shop</title>
 <style>
 :root{--navy:#071523;--lime:#bfff2f;--ink:#17241f;--muted:#718078;--line:#dfe5df;--bg:#f7f8f4;--card:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans Bengali",sans-serif}
-button,input{font:inherit}button{cursor:pointer}.header{min-height:78px;background:#071523;border-bottom:1px solid #193044;display:flex;align-items:center;padding:0 34px;gap:24px;position:sticky;top:0;z-index:5}.brand{border:0;background:none;font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px}.mark{width:38px;height:38px;border-radius:11px;background:var(--lime);color:#071523;display:grid;place-items:center;font-size:21px}.brandText{line-height:1.05}.brand small{display:block;font-size:9px;letter-spacing:.08em;color:#b7c2cd}.nav{display:flex;gap:5px;flex:1}.nav button{border:0;background:none;padding:11px 14px;border-radius:10px;color:#d8e0e6;font-size:13px;font-weight:700}.nav button.active,.nav button:hover{background:var(--lime);color:#071523}.login{border:1px solid #294256;background:#0d2030;color:white;border-radius:22px;padding:10px 16px;font-size:12px}
-.hero{min-height:480px;background:linear-gradient(90deg,#03101bf8,#03101bd8,#03101b20);padding:70px 7%;display:flex;align-items:center;color:#fff}.hero h1{font-size:45px;margin:10px 0}.hero em{color:var(--lime);font-style:normal}.hero p{max-width:620px;color:#c6d0d8;line-height:1.7}.actions{display:flex;gap:10px;margin-top:20px}.btn{border:0;border-radius:9px;padding:11px 17px;font-weight:700}.primary{background:#bfff2f;color:#071523}.outline{background:transparent;border:1px solid #365067;color:#fff}.section,.screen{max-width:1180px;margin:auto;padding:48px 28px}.heading{margin-bottom:22px}.heading h2{margin:5px 0;font-size:28px}.muted{color:var(--muted);font-size:12px}.packages{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.pkg{background:#071a2a;color:#fff;border:1px solid #294256;border-radius:15px;padding:20px;min-height:180px;display:flex;flex-direction:column}.pkg:hover{border-color:var(--lime)}.pkg .icon{width:40px;height:40px;border-radius:50%;background:#102c3d;color:var(--lime);display:grid;place-items:center}.pkg h3{margin:35px 0 7px;font-size:17px}.pkg .bottom{margin-top:auto;border-top:1px solid #294256;padding-top:14px;display:flex;justify-content:space-between}.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:24px;box-shadow:0 6px 25px #16291b08}.hidden{display:none}.back{margin-bottom:15px;color:#17241f!important;border-color:#b8c1b9!important}.quantity{display:flex;align-items:center;gap:14px;margin:22px 0}.quantity button{width:42px;height:42px;border:1px solid #ccd5cc;border-radius:9px;background:#f2f5ef;font-size:23px}.qty{min-width:35px;text-align:center;font-size:20px;font-weight:800}.pricebox{padding:15px;border-radius:11px;background:#eef3e9;margin:18px 0;font-size:18px}.input{width:100%;height:45px;border:1px solid var(--line);border-radius:8px;padding:0 11px;margin:7px 0 14px;font-size:16px}.warn{background:#fff7e6;border:1px solid #efd9a8;color:#876a32;padding:14px;border-radius:11px;margin:18px 0;font-size:12px}.footer{padding:25px;text-align:center;color:#87938d;font-size:11px;border-top:1px solid var(--line)}
-@media(max-width:760px){.header{padding:9px 12px;flex-wrap:wrap}.nav{order:3;flex:0 0 100%;overflow-x:auto}.nav button{white-space:nowrap}.login{padding:8px 10px}.hero{min-height:380px;padding:45px 18px}.hero h1{font-size:34px}.packages{grid-template-columns:1fr 1fr}.section,.screen{padding:35px 14px}}
-@media(max-width:500px){.packages{grid-template-columns:1fr}.actions{flex-direction:column}.actions .btn{width:100%}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans Bengali",sans-serif}button,input{font:inherit}button{cursor:pointer}
+.header{min-height:78px;background:#071523;border-bottom:1px solid #193044;display:flex;align-items:center;padding:0 34px;gap:24px;position:sticky;top:0;z-index:20}.brand{border:0;background:none;font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px}.mark{width:38px;height:38px;border-radius:11px;background:var(--lime);color:#071523;display:grid;place-items:center;font-size:21px}.brandText{line-height:1.05}.brand small{display:block;font-size:9px;letter-spacing:.08em;color:#b7c2cd}.nav{display:flex;gap:5px;flex:1}.nav button{border:0;background:none;padding:11px 14px;border-radius:10px;color:#d8e0e6;font-size:13px;font-weight:700}.nav button.active,.nav button:hover{background:var(--lime);color:#071523}.login{border:1px solid #294256;background:#0d2030;color:white;border-radius:22px;padding:10px 16px;font-size:12px}
+.hero{min-height:480px;background:linear-gradient(90deg,#03101bf8,#03101bd8,#03101b20),url("/manus-storage/95752f3877a4fc46849e406d2f9cd0a9_1b10ce00.jpg") center/cover no-repeat;padding:70px 7%;display:flex;align-items:center;color:#fff}.hero h1{font-size:45px;margin:10px 0}.hero em{color:var(--lime);font-style:normal}.hero p{max-width:620px;color:#c6d0d8;line-height:1.7}.actions{display:flex;gap:10px;margin-top:20px}.btn{border:0;border-radius:9px;padding:11px 17px;font-weight:700}.primary{background:#bfff2f;color:#071523}.outline{background:transparent;border:1px solid #365067;color:#fff}
+.section,.screen{max-width:1180px;margin:auto;padding:48px 28px}.heading{margin-bottom:22px}.heading h2{margin:5px 0;font-size:28px}.muted{color:var(--muted);font-size:12px}.packages{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.pkg{background:#071a2a;color:#fff;border:1px solid #294256;border-radius:15px;padding:20px;min-height:180px;display:flex;flex-direction:column}.pkg:hover{border-color:var(--lime)}.pkg .icon{width:40px;height:40px;border-radius:50%;background:#102c3d;color:var(--lime);display:grid;place-items:center}.pkg h3{margin:35px 0 7px;font-size:17px}.pkg .bottom{margin-top:auto;border-top:1px solid #294256;padding-top:14px;display:flex;justify-content:space-between}.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:24px;box-shadow:0 6px 25px #16291b08}.hidden{display:none!important}.back{margin-bottom:15px;color:#17241f!important;border-color:#b8c1b9!important}.quantity{display:flex;align-items:center;gap:14px;margin:22px 0}.quantity button{width:42px;height:42px;border:1px solid #ccd5cc;border-radius:9px;background:#f2f5ef;font-size:23px}.qty{min-width:35px;text-align:center;font-size:20px;font-weight:800}.pricebox{padding:15px;border-radius:11px;background:#eef3e9;margin:18px 0;font-size:18px}.input{width:100%;height:45px;border:1px solid var(--line);border-radius:8px;padding:0 11px;margin:7px 0 14px;font-size:16px}.warn{background:#fff7e6;border:1px solid #efd9a8;color:#876a32;padding:14px;border-radius:11px;margin:18px 0;font-size:12px}.footer{padding:25px;text-align:center;color:#87938d;font-size:11px;border-top:1px solid var(--line)}
+.profile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.balance{font-size:32px;font-weight:800;margin:10px 0;color:#17241f}.auth-overlay{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:100}.auth-overlay.show{display:flex}.auth-modal{width:min(480px,100%);max-height:92vh;overflow:auto;background:white;border-radius:18px;padding:24px;box-shadow:0 20px 60px #0005}.auth-head{display:flex;justify-content:space-between;align-items:center}.auth-head h2{margin:0}.auth-close{border:0;background:#eef2ee;border-radius:50%;width:34px;height:34px}.auth-tabs{display:flex;gap:5px;background:#eef2ee;padding:4px;border-radius:10px;margin:18px 0}.auth-tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:8px}.auth-tabs button.active{background:#071523;color:#fff}.auth-form{display:none}.auth-form.active{display:block}.auth-form label{display:block;font-size:13px;font-weight:700;margin:10px 0 5px}.auth-form input{width:100%;height:43px;border:1px solid #ccd5cc;border-radius:8px;padding:0 10px}.auth-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.forgot,.link{display:block;color:#477400;font-size:12px;margin:4px 0 10px;cursor:pointer}.auth-submit{width:100%;border:0;background:#bfff2f;padding:12px;border-radius:9px;font-weight:800;margin-top:12px}.auth-msg{font-size:12px;margin-top:10px}.account-badge{font-size:11px;color:#bfff2f;margin-left:8px}
+@media(max-width:760px){.header{padding:9px 12px;flex-wrap:wrap}.nav{order:3;flex:0 0 100%;overflow-x:auto}.nav button{white-space:nowrap}.login{padding:8px 10px}.hero{min-height:390px;padding:45px 18px}.hero h1{font-size:34px}.packages{grid-template-columns:1fr 1fr}.section,.screen{padding:35px 14px}}
+@media(max-width:500px){.packages{grid-template-columns:1fr}.actions{flex-direction:column}.actions .btn{width:100%}.profile-grid,.auth-row{grid-template-columns:1fr}.hero{background-position:center center}}
 </style>
 </head>
 <body>
 <header class="header">
 <button class="brand" onclick="show('home')"><span class="mark">🎮</span><span class="brandText">MGS<br><small>GAMES SHOP</small></span></button>
 <nav class="nav">
-<button class="active" onclick="show('home')">⌂ Home</button><button onclick="show('packages')">💎 Packages</button><button onclick="show('wallet')">▣ Wallet</button><button onclick="show('orders')">▣ Orders</button><button onclick="show('profile')">● Profile</button>
-</nav><button class="login" onclick="alert('Create Account / Sign In will use the account system.')">Create account →</button>
+<button id="navHome" class="active" onclick="show('home')">⌂ Home</button>
+<button id="navPackages" onclick="show('packages')">💎 Packages</button>
+<button id="navWallet" onclick="show('wallet')">▣ Wallet</button>
+<button id="navOrders" onclick="show('orders')">▣ Orders</button>
+<button id="navProfile" onclick="show('profile')">● Profile</button>
+</nav>
+<button class="login" id="accountBtn" onclick="openAuth('signin')">Create account →</button>
 </header>
 
 <section id="home">
@@ -33,32 +40,116 @@ button,input{font:inherit}button{cursor:pointer}.header{min-height:78px;backgrou
 <div class="pkg" onclick="showPackage('Airdrop')"><div class="icon">✦</div><h3>Airdrop</h3><div class="bottom"><b>Open package</b> →</div></div>
 </div></div></section>
 
+<section id="packages" class="screen hidden"><h1>Packages</h1><p class="muted">একটি package চাপলে তার order interface খুলবে।</p><div class="packages" style="margin-top:25px">
+<div class="pkg" onclick="showPackage('Weekly Lite Membership')"><div class="icon">✦</div><h3>Weekly Lite Membership</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Weekly Membership')"><div class="icon">✦</div><h3>Weekly Membership</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Monthly Membership')"><div class="icon">✦</div><h3>Monthly Membership</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Level Up Pass')"><div class="icon">✦</div><h3>Level Up Pass</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Special Event')"><div class="icon">✦</div><h3>Special Event</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Airdrop')"><div class="icon">✦</div><h3>Airdrop</h3><div class="bottom">Open →</div></div></div></section>
+
 <section id="package" class="screen hidden"><button class="btn outline back" onclick="show('packages')">← Back</button><div class="panel">
-<div class="muted">Package</div><h1 id="packageTitle">Package</h1>
-<div id="packageList"></div>
+<div class="muted">Package</div><h1 id="packageTitle">Package</h1><p id="packageInfo" class="muted"></p>
 <label>Quantity</label><div class="quantity"><button onclick="changeQty(-1)">−</button><span class="qty" id="qty">1</span><button onclick="changeQty(1)">+</button></div>
 <div class="pricebox">Total Price: <b>৳<span id="total">0</span></b></div>
 <label>Free Fire UID</label><input id="uid" class="input" inputmode="numeric" pattern="[0-9]*" maxlength="20" placeholder="শুধু সংখ্যা লিখুন">
 <button class="btn primary" onclick="submitOrder()">Submit Order →</button>
-<div class="warn">UID ঘরে শুধুমাত্র সংখ্যা দেওয়া যাবে।</div>
+<div class="warn">UID ঘরে শুধুমাত্র সংখ্যা দেওয়া যাবে। পেমেন্ট/অর্ডার করার আগে Sign In বা Sign Up করতে হবে।</div>
 </div></section>
 
-<section id="packages" class="screen hidden"><h1>Packages</h1><p class="muted">একটি package চাপলে তার order interface খুলবে।</p><div class="packages" style="margin-top:25px">
-<div class="pkg" onclick="showPackage('Weekly Lite Membership')"><h3>Weekly Lite Membership</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Weekly Membership')"><h3>Weekly Membership</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Monthly Membership')"><h3>Monthly Membership</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Level Up Pass')"><h3>Level Up Pass</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Special Event')"><h3>Special Event</h3><div class="bottom">Open →</div></div><div class="pkg" onclick="showPackage('Airdrop')"><h3>Airdrop</h3><div class="bottom">Open →</div></div></div></section>
+<section id="wallet" class="screen hidden"><h1>Your Wallet</h1><div class="panel"><div class="muted">Current Wallet Balance</div><div class="balance">৳<span id="walletBalance">0</span></div><p id="walletStatus" class="muted">আপনি এখনো কোনো টাকা Add করেননি।</p><button class="btn primary" onclick="requireAuth('wallet')">Add Money / Deposit</button></div></section>
 
-<section id="wallet" class="screen hidden"><h1>Your Wallet</h1><div class="panel"><p class="muted">Wallet balance ও deposit interface এখানে থাকবে।</p></div></section>
-<section id="orders" class="screen hidden"><h1>Orders</h1><div class="panel"><p class="muted">আপনার order history এখানে থাকবে।</p></div></section>
-<section id="profile" class="screen hidden"><h1>Profile</h1><div class="panel"><p class="muted">Customer profile এখানে থাকবে।</p></div></section>
+<section id="orders" class="screen hidden"><h1>Orders</h1><div class="panel"><p class="muted">Sign In করলে আপনার order history এখানে দেখা যাবে।</p><div id="orderList"></div></div></section>
+
+<section id="profile" class="screen hidden"><h1>Your Profile</h1><div class="panel" id="profilePanel"></div></section>
 <footer class="footer">MGS Games Shop</footer>
+
+<div id="authOverlay" class="auth-overlay" onclick="if(event.target===this)closeAuth()">
+<div class="auth-modal">
+<div class="auth-head"><h2 id="authTitle">Sign In</h2><button class="auth-close" onclick="closeAuth()">×</button></div>
+<div class="auth-tabs"><button id="tabSignin" class="active" onclick="switchAuth('signin')">Sign In</button><button id="tabSignup" onclick="switchAuth('signup')">Sign Up</button></div>
+
+<div id="signinForm" class="auth-form active">
+<label>Email</label><input id="loginEmail" type="email" placeholder="Enter your email">
+<label>Password</label><input id="loginPassword" type="password" placeholder="Enter your password">
+<span class="forgot" onclick="showReset()">Forgot Password?</span>
+<button class="auth-submit" onclick="signIn()">Sign In</button><div id="signinMsg" class="auth-msg"></div>
+</div>
+
+<div id="signupForm" class="auth-form">
+<div class="auth-row"><div><label>First Name</label><input id="firstName" type="text" placeholder="First name"></div><div><label>Last Name</label><input id="lastName" type="text" placeholder="Last name"></div></div>
+<label>Email</label><input id="signupEmail" type="email" placeholder="Email">
+<label>Password</label><input id="signupPassword" type="password" placeholder="Password">
+<label>Date of Birth</label><input id="dob" type="date">
+<button class="auth-submit" onclick="signUp()">Sign Up</button><div id="signupMsg" class="auth-msg"></div>
+</div>
+
+<div id="resetForm" class="auth-form">
+<label>Email</label><input id="resetEmail" type="email" placeholder="Your email">
+<div id="resetCodeBox" class="hidden"><label>Verification Code</label><input id="resetCode" placeholder="Verification code"><label>New Password</label><input id="newPassword" type="password" placeholder="New password"></div>
+<button class="auth-submit" id="resetBtn" onclick="resetAction()">Send Verification Code</button><div id="resetMsg" class="auth-msg"></div>
+</div>
+</div></div>
 
 <script>
 const prices={"Weekly Lite Membership":45,"Weekly Membership":190,"Monthly Membership":750,"Level Up Pass":170,"Special Event":99,"Airdrop":60};
-let selected="",qty=1;
-function show(id){["home","packages","package","wallet","orders","profile"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));scrollTo(0,0)}
-function showPackage(name){selected=name;qty=1;document.getElementById("packageTitle").textContent=name;document.getElementById("qty").textContent=qty;document.getElementById("uid").value="";updateTotal();show("package")}
+let selected="",qty=1,pendingAction=null;
+
+function getUser(){try{return JSON.parse(localStorage.getItem("mgsUser")||"null")}catch(e){return null}}
+function setUser(u){localStorage.setItem("mgsUser",JSON.stringify(u))}
+function wallet(){return Number(localStorage.getItem("mgsWallet")||0)}
+function show(id){
+["home","packages","package","wallet","orders","profile"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));
+["navHome","navPackages","navWallet","navOrders","navProfile"].forEach(x=>document.getElementById(x).classList.remove("active"));
+const map={home:"navHome",packages:"navPackages",wallet:"navWallet",orders:"navOrders",profile:"navProfile"};
+if(map[id])document.getElementById(map[id]).classList.add("active");
+if(id==="wallet")updateWallet(); if(id==="profile")updateProfile(); if(id==="orders")updateOrders(); scrollTo(0,0)
+}
+function openAuth(mode="signin"){document.getElementById("authOverlay").classList.add("show");switchAuth(mode)}
+function closeAuth(){document.getElementById("authOverlay").classList.remove("show")}
+function switchAuth(mode){
+["signinForm","signupForm","resetForm"].forEach(x=>document.getElementById(x).classList.remove("active"));
+document.getElementById(mode==="signin"?"signinForm":mode==="signup"?"signupForm":"resetForm").classList.add("active");
+document.getElementById("tabSignin").classList.toggle("active",mode==="signin");document.getElementById("tabSignup").classList.toggle("active",mode==="signup");
+document.getElementById("authTitle").textContent=mode==="signin"?"Sign In":mode==="signup"?"Create Account":"Reset Password"
+}
+function showReset(){switchAuth("reset");document.getElementById("resetCodeBox").classList.add("hidden");document.getElementById("resetBtn").textContent="Send Verification Code"}
+function signUp(){
+const f=document.getElementById("firstName").value.trim(),l=document.getElementById("lastName").value.trim(),e=document.getElementById("signupEmail").value.trim(),p=document.getElementById("signupPassword").value,d=document.getElementById("dob").value;
+if(!f||!l||!e||!p||!d){document.getElementById("signupMsg").textContent="সব তথ্য পূরণ করুন।";return}
+setUser({firstName:f,lastName:l,email:e,password:p,dob:d});document.getElementById("signupMsg").textContent="Account created. এখন Sign In করুন।";switchAuth("signin")
+}
+function signIn(){
+const u=getUser(),e=document.getElementById("loginEmail").value.trim(),p=document.getElementById("loginPassword").value;
+if(!u||u.email!==e||u.password!==p){document.getElementById("signinMsg").textContent="Email অথবা Password সঠিক নয়।";return}
+localStorage.setItem("mgsSignedIn","1");closeAuth();updateAccountButton();updateProfile();alert("Sign In সফল হয়েছে।");show("profile")
+}
+function resetAction(){
+if(document.getElementById("resetCodeBox").classList.contains("hidden")){
+document.getElementById("resetCodeBox").classList.remove("hidden");document.getElementById("resetBtn").textContent="Reset Password";document.getElementById("resetMsg").textContent="Demo verification code: 123456";
+}else{
+const u=getUser(),e=document.getElementById("resetEmail").value.trim(),c=document.getElementById("resetCode").value.trim(),p=document.getElementById("newPassword").value;
+if(!u||u.email!==e||c!=="123456"||!p){document.getElementById("resetMsg").textContent="তথ্য সঠিকভাবে দিন।";return}
+u.password=p;setUser(u);document.getElementById("resetMsg").textContent="Password changed. Sign In করুন।"
+}
+}
+function updateAccountButton(){const u=getUser();document.getElementById("accountBtn").textContent=localStorage.getItem("mgsSignedIn")==="1"?(u?(u.firstName+" "+u.lastName):"Profile"):"Create account →"}
+function updateWallet(){document.getElementById("walletBalance").textContent=wallet();document.getElementById("walletStatus").textContent=wallet()>0?"আপনার বর্তমান wallet balance দেখানো হচ্ছে।":"আপনি এখনো কোনো টাকা Add করেননি।"}
+function updateProfile(){
+const u=getUser(),p=document.getElementById("profilePanel");
+if(!u||localStorage.getItem("mgsSignedIn")!=="1"){p.innerHTML='<h2>Sign In / Sign Up করুন</h2><p class="muted">আপনার নাম, Email, DOB ও Wallet balance দেখতে আগে account-এ Sign In করুন।</p><button class="btn primary" onclick="openAuth('signin')">Sign In</button> <button class="btn" onclick="openAuth('signup')">Sign Up</button>';return}
+p.innerHTML='<div class="profile-grid"><div><div class="muted">Name</div><h2>'+escapeHtml(u.firstName+" "+u.lastName)+'</h2><div class="muted">Email</div><p>'+escapeHtml(u.email)+'</p><div class="muted">Date of Birth</div><p>'+escapeHtml(u.dob)+'</p></div><div><div class="muted">Wallet Balance</div><div class="balance">৳'+wallet()+'</div><button class="btn primary" onclick="show('wallet')">Open Wallet</button><button class="btn" style="margin-left:8px" onclick="logout()">Logout</button></div></div>'
+}
+function updateOrders(){const u=getUser();document.getElementById("orderList").innerHTML=localStorage.getItem("mgsOrders")||'<p class="muted">কোনো order এখনো নেই।</p>'}
+function logout(){localStorage.removeItem("mgsSignedIn");updateAccountButton();show("home")}
+function requireAuth(action){if(localStorage.getItem("mgsSignedIn")!=="1"){pendingAction=action;openAuth("signin");return false}return true}
+function showPackage(name){selected=name;qty=1;document.getElementById("packageTitle").textContent=name;document.getElementById("packageInfo").textContent="প্রতি ইউনিট মূল্য: ৳"+prices[name];document.getElementById("qty").textContent=qty;document.getElementById("uid").value="";updateTotal();show("package")}
 function changeQty(n){qty=Math.max(1,Math.min(99,qty+n));document.getElementById("qty").textContent=qty;updateTotal()}
 function updateTotal(){document.getElementById("total").textContent=(prices[selected]||0)*qty}
 document.getElementById("uid").addEventListener("input",function(){this.value=this.value.replace(/[^0-9]/g,"")})
-function submitOrder(){const uid=document.getElementById("uid").value.trim();if(!uid){alert("Free Fire UID দিন।");return}alert("Order submitted: "+selected+" × "+qty+" | UID: "+uid)}
+function submitOrder(){
+if(!requireAuth("order"))return;
+const uid=document.getElementById("uid").value.trim();if(!uid){alert("Free Fire UID দিন।");return}
+const total=(prices[selected]||0)*qty;if(wallet()<total){alert("আপনার Wallet balance ৳"+wallet()+"। এই order-এর জন্য ৳"+total+" প্রয়োজন।");show("wallet");return}
+const orders=JSON.parse(localStorage.getItem("mgsOrders")||"[]");orders.push({package:selected,qty,uid,total,date:new Date().toLocaleString()});localStorage.setItem("mgsOrders",JSON.stringify(orders).replace(/"/g,"&quot;"));localStorage.setItem("mgsWallet",String(wallet()-total));alert("Order submitted successfully.");show("orders")
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+document.getElementById("uid").addEventListener("keydown",e=>{if(!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key))e.preventDefault()});
+updateAccountButton();updateWallet();updateProfile();
 </script>
 </body></html>
