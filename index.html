@@ -490,6 +490,19 @@ main{min-height:calc(100vh - 78px)}
   </div>
 </div>
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://qyaagwehhyvaqmuvpsql.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_LkZ_IkopEp_vNs1mc1noxA_LXCvk_D8";
+
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+</script>
+
 <script>
 const packages = [
   {name:"Diamond List",diamondList:true},
