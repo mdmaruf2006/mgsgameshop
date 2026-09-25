@@ -504,7 +504,7 @@ main{min-height:calc(100vh - 78px)}
 </script>
 
 <script>
-const packages = [
+let packages = [
   {name:"Diamond List",diamondList:true},
   {name:"Weekly Lite Membership",price:45},
   {name:"Weekly Membership",price:158},
@@ -533,6 +533,52 @@ const levelPasses = [
   {level:"30 Level",diamonds:350,price:120},
   {level:"Fully 6 Packs",diamonds:1270,price:480}
 ];
+
+async function loadPackagesFromSupabase(){
+  try{
+    if(typeof supabase==="undefined") return false;
+    const {data,error}=await supabase
+      .from("packages")
+      .select("id,name,package_type,price,diamond_amount,is_active,sort_order")
+      .eq("is_active",true)
+      .order("sort_order",{ascending:true});
+    if(error) throw error;
+    const rows=Array.isArray(data)?data:[];
+
+    const dbDiamonds=rows
+      .filter(r=>r.package_type==="diamond")
+      .map(r=>({diamonds:Number(r.diamond_amount)||0,price:Number(r.price)||0,id:r.id}))
+      .filter(r=>r.diamonds>0)
+      .sort((a,b)=>a.diamonds-b.diamonds);
+
+    const dbLevelPasses=rows
+      .filter(r=>r.package_type==="level_up")
+      .map(r=>({level:r.name,diamonds:Number(r.diamond_amount)||0,price:Number(r.price)||0,id:r.id}))
+      .sort((a,b)=>(Number(a.id)||0)-(Number(b.id)||0));
+
+    const dbPackages=[];
+    dbPackages.push({name:"Diamond List",diamondList:true});
+    rows.filter(r=>["weekly_lite","weekly","monthly"].includes(r.package_type))
+      .forEach(r=>dbPackages.push({name:r.name,price:Number(r.price)||0,id:r.id}));
+    dbPackages.push({name:"Level UP Pass",levelPassList:true});
+    const special=rows.find(r=>r.package_type==="special_event");
+    const airdrop=rows.find(r=>r.package_type==="airdrop");
+    if(special) dbPackages.push({name:special.name,comingSoon:"Spacial Event Coming Soon",id:special.id});
+    if(airdrop) dbPackages.push({name:airdrop.name,comingSoon:"Airdrop Coming Soon",id:airdrop.id});
+
+    if(dbDiamonds.length) diamondPackages.splice(0,diamondPackages.length,...dbDiamonds);
+    if(dbLevelPasses.length) levelPasses.splice(0,levelPasses.length,...dbLevelPasses);
+    if(dbPackages.length>1) packages=dbPackages;
+
+    renderPackages();
+    renderDiamondList();
+    renderLevelPasses();
+    return true;
+  }catch(err){
+    console.error("Supabase packages load failed:",err);
+    return false;
+  }
+}
 
 let selectedPackage=null, selectedDiamond=null, selectedLevelPass=null, selectedOrderType=null, qty=1, authMode="signin";
 
@@ -1059,9 +1105,11 @@ function escapeHtml(s){
  return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded",async()=>{
   processDepositTransactions();
-  renderPackages();renderDiamondList();renderLevelPasses();updateAuthArea();renderWallet();renderOrders();renderProfile();
+  renderPackages();renderDiamondList();renderLevelPasses();
+  await loadPackagesFromSupabase();
+  updateAuthArea();renderWallet();renderOrders();renderProfile();
   const wanted=location.hash.replace(/^#/,"");
   if(wanted&&document.getElementById(wanted)){
     if(wanted==="order" && restoreOrderState()) showPage("order");
