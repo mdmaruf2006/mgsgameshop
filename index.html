@@ -362,6 +362,20 @@ main{min-height:calc(100vh - 78px)}
     </div>
   </section>
 
+  <section id="specialevent" class="page">
+    <div class="container">
+      <h2 class="page-title">Special Event</h2>
+      <div class="grid" id="specialEventList"></div>
+    </div>
+  </section>
+
+  <section id="airdrop" class="page">
+    <div class="container">
+      <h2 class="page-title">Airdrop</h2>
+      <div class="grid" id="airdropList"></div>
+    </div>
+  </section>
+
   <section id="order" class="page">
     <div class="container">
       <div class="order-box">
@@ -496,7 +510,7 @@ main{min-height:calc(100vh - 78px)}
 const SUPABASE_URL="https://qyaagwehhyvaqmuvpsql.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_LkZ_IkopEp_vNs1mc1noxA_LXCvk_D8";
 const mgsSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let packages=[],diamondPackages=[],levelPasses=[];
+let packages=[],diamondPackages=[],levelPasses=[],specialEventPackages=[],airdropPackages=[];
 async function loadPackagesFromSupabase(){
  try{
   const {data,error}=await mgsSupabase.from("packages").select("id,name,package_type,price,description,diamond_amount,is_active,sort_order").eq("is_active",true);
@@ -504,9 +518,15 @@ async function loadPackagesFromSupabase(){
   diamondPackages=rows.filter(p=>String(p.package_type||'').toLowerCase()==='diamond').map(p=>({id:p.id,diamonds:Number(p.diamond_amount||0),price:Number(p.price||0),name:p.name,description:p.description||''})).sort((a,b)=>a.diamonds-b.diamonds||a.id-b.id);
   levelPasses=rows.filter(p=>String(p.package_type||'').toLowerCase().includes('level')).map(p=>({id:p.id,level:p.name,diamonds:Number(p.diamond_amount||0),price:Number(p.price||0),description:p.description||'',sortOrder:Number(p.sort_order||0)})).sort((a,b)=>a.sortOrder-b.sortOrder||a.diamonds-b.diamonds||a.id-b.id);
   const normal=rows.filter(p=>{const t=String(p.package_type||'').toLowerCase();return t!=='diamond'&&!t.includes('level')&&t!=='special_event'&&t!=='airdrop'}).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||a.id-b.id);
-  // Keep Special Event and Airdrop available for their existing dedicated area;
-  // do not create extra ৳0 cards in the main package grid.
-  packages=[{name:'Diamond List',diamondList:true},...normal.map(p=>({id:p.id,name:p.name,price:Number(p.price||0),description:p.description||''})),{name:'Level UP Pass',levelPassList:true}];
+  specialEventPackages=rows.filter(p=>String(p.package_type||'').toLowerCase()==='special_event').sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||a.id-b.id);
+  airdropPackages=rows.filter(p=>String(p.package_type||'').toLowerCase()==='airdrop').sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||a.id-b.id);
+  packages=[
+    {name:'Diamond List',diamondList:true},
+    ...normal.map(p=>({id:p.id,name:p.name,price:Number(p.price||0),description:p.description||''})),
+    {name:'Level UP Pass',levelPassList:true},
+    {name:'Spacial Event',specialEvent:true},
+    {name:'Airdrop',airdrop:true}
+  ];
   renderPackages();renderDiamondList();renderLevelPasses();
  }catch(e){console.error('Supabase package load failed',e);renderPackages();renderDiamondList();renderLevelPasses();}
 }
@@ -679,13 +699,42 @@ function openLevelPassOrder(i){
 }
 
 function renderPackages(){
-  document.getElementById("packageGrid").innerHTML=packages.map((p,i)=>`
-    <div class="card">
+  document.getElementById("packageGrid").innerHTML=packages.map((p,i)=>{
+    const action=p.diamondList?"showPage('diamonds')":p.levelPassList?"showPage('levelpasses')":p.specialEvent?"showSpecialEvent()":p.airdrop?"showAirdrop()":"openOrder("+i+")";
+    const label=(p.diamondList||p.levelPassList||p.specialEvent||p.airdrop)?"View →":"Order Now →";
+    return `<div class="card">
       <h3>${escapeHtml(p.name)}</h3>
       ${p.price!==undefined?`<div class="price">৳${p.price}</div>`:''}
       <div class="small">Free Fire game package — fast and easy purchase.</div>
-      <button onclick="${p.diamondList?`showPage('diamonds')`:p.levelPassList?`showPage('levelpasses')`:`openOrder(${i})`}">Order Now →</button>
-    </div>`).join("");
+      <button onclick="${action}">${label}</button>
+    </div>`;
+  }).join("");
+  renderSpecialEventList();
+  renderAirdropList();
+}
+
+function renderComingSoonList(listId,title,rows){
+  const box=document.getElementById(listId);
+  if(!box)return;
+  if(!rows.length){box.innerHTML=`<div class="notice">${escapeHtml(title)} Coming Soon</div>`;return;}
+  box.innerHTML=rows.map(p=>{const n=String(p.name||title);const q=JSON.stringify(n).replace(/'/g,'\\u0027');return `<div class="card"><h3>${escapeHtml(n)}</h3>${p.price!==undefined?`<div class="price">৳${Number(p.price)||0}</div>`:''}<div class="small">${escapeHtml(p.description||'')}</div><button onclick='openDynamicPackage(${Number(p.id)},${q},${Number(p.price)||0})'>Order Now →</button></div>`}).join('');
+}
+function renderSpecialEventList(){renderComingSoonList('specialEventList','Special Event',specialEventPackages)}
+function renderAirdropList(){renderComingSoonList('airdropList','Airdrop',airdropPackages)}
+function showSpecialEvent(){renderSpecialEventList();showPage('specialevent')}
+function showAirdrop(){renderAirdropList();showPage('airdrop')}
+function openDynamicPackage(id,name,price){
+  const p={id,name,price};
+  if(!requireAuth('order'))return;
+  selectedPackage=p;selectedDiamond=null;selectedLevelPass=null;selectedOrderType='package';qty=1;saveOrderState();
+  document.getElementById('orderTitle').textContent=name;
+  document.getElementById('orderPrice').textContent='৳'+price;
+  document.getElementById('uidInput').value='';
+  document.getElementById('orderNotice').innerHTML='';
+  document.querySelector('#order .qty').style.display='flex';
+  document.getElementById('uidInput').closest('.field').style.display='block';
+  document.querySelector('#order .primary-action').style.display='';
+  updateOrderTotal();showPage('order');
 }
 
 function openOrder(i){
