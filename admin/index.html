@@ -160,6 +160,7 @@ let editingId=null;
 
 function login(){
   if(document.getElementById("adminPass").value===ADMIN_PASSWORD){
+    localStorage.setItem("mgsAdminLoggedIn","true");
     document.getElementById("login").classList.add("hidden");
     document.getElementById("panel").classList.remove("hidden");
     loadPackages();
@@ -167,7 +168,15 @@ function login(){
     document.getElementById("loginError").textContent="আপনার পাসওয়ার্ডটি সঠিক নয়।";
   }
 }
-function logout(){location.reload()}
+function logout(){localStorage.removeItem("mgsAdminLoggedIn");location.reload()}
+
+function restoreAdminSession(){
+  if(localStorage.getItem("mgsAdminLoggedIn")==="true"){
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("panel").classList.remove("hidden");
+    loadPackages();
+  }
+}
 
 async function loadPackages(){
   const status=document.getElementById("connectionStatus");
@@ -521,6 +530,7 @@ function esc(s){
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 document.getElementById("adminPass").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+restoreAdminSession();
 </script>
 </body>
 </html>
