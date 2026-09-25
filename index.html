@@ -266,6 +266,22 @@ main{min-height:calc(100vh - 78px)}
   .brand span:last-child{font-size:17px}
   .mobile-menu{left:10px;right:10px;width:auto}
 }
+
+.history-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.history-action{border:1px solid #9a7419;background:linear-gradient(135deg,#111722,#17130a);color:#fff;border-radius:11px;padding:13px 14px;font-weight:900;text-align:center}
+.history-action:hover{border-color:var(--gold2);color:var(--gold);transform:translateY(-1px)}
+.history-panel{margin-top:12px}
+.history-back{border:1px solid #3a455d;background:#0e1627;color:#fff;border-radius:9px;padding:9px 13px;font-weight:800;margin-bottom:12px}
+.history-back:hover{border-color:var(--gold);color:var(--gold)}
+.history-item{border:1px solid #263149;border-radius:11px;background:#0d1322;padding:14px;margin-bottom:10px}
+.history-item strong{color:#fff}
+.status-badge{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid #4a556d;background:#111a2d;color:#e9edf5}
+.status-pending{border-color:#8e6a18;background:#17140a;color:#ffe38b}
+.status-added{border-color:#237a5d;background:#0a2119;color:#7ff0c5}
+.status-rejected{border-color:#8d3440;background:#260d12;color:#ff9ba6}
+.history-empty{padding:18px;text-align:center;border:1px dashed #34405a;border-radius:11px;color:var(--muted)}
+@media(max-width:700px){.history-actions{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -418,7 +434,19 @@ main{min-height:calc(100vh - 78px)}
   <section id="orders" class="page">
     <div class="container">
       <h2 class="page-title">Orders</h2>
+      <div class="history-actions">
+        <button class="history-action" type="button" onclick="showOrderHistory('topup')">📦 Top Up History</button>
+        <button class="history-action" type="button" onclick="showOrderHistory('transaction')">💳 Transaction History</button>
+      </div>
       <div class="card" id="ordersList"></div>
+      <div class="history-panel hidden" id="topupHistoryPanel">
+        <button class="history-back" type="button" onclick="hideOrderHistory()">← Back to Orders</button>
+        <div class="card" id="topupHistoryList"></div>
+      </div>
+      <div class="history-panel hidden" id="transactionHistoryPanel">
+        <button class="history-back" type="button" onclick="hideOrderHistory()">← Back to Orders</button>
+        <div class="card" id="transactionHistoryList"></div>
+      </div>
     </div>
   </section>
 
@@ -497,8 +525,35 @@ let selectedPackage=null, selectedDiamond=null, selectedLevelPass=null, selected
 
 const getUser=()=>JSON.parse(localStorage.getItem("mgsUser")||"null");
 const isSignedIn=()=>localStorage.getItem("mgsSignedIn")==="true";
-const getWallet=()=>Number(localStorage.getItem("mgsWallet")||0);
+const readWallet=()=>Number(localStorage.getItem("mgsWallet")||0);
+const getTransactions=()=>JSON.parse(localStorage.getItem("mgsTransactions")||"[]");
+const getWallet=()=>{processDepositTransactions();return readWallet()};
 const getOrders=()=>JSON.parse(localStorage.getItem("mgsOrders")||"[]");
+
+function saveTransactions(list){localStorage.setItem("mgsTransactions",JSON.stringify(list));}
+function processDepositTransactions(){
+  const list=getTransactions();
+  let balance=readWallet(), changed=false;
+  list.forEach(t=>{
+    const status=String(t.status||"Pending");
+    if(status==="Added" && !t.credited){
+      balance+=Number(t.amount)||0;
+      t.credited=true;
+      t.creditedAt=t.creditedAt||new Date().toLocaleString();
+      changed=true;
+    }
+    if(status==="Rejected" && t.credited){
+      balance-=Number(t.amount)||0;
+      t.credited=false;
+      changed=true;
+    }
+  });
+  if(changed){
+    localStorage.setItem("mgsWallet",String(balance));
+    saveTransactions(list);
+  }
+  return list;
+}
 
 function showPage(page){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
@@ -510,7 +565,7 @@ function showPage(page){
   if(mh)mh.classList.toggle("active",page==="home");
   document.querySelectorAll("#mobileMenu [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
   if(page==="wallet")renderWallet();
-  if(page==="orders")renderOrders();
+  if(page==="orders"){hideOrderHistory();renderOrders();}
   if(page==="profile")renderProfile();
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -711,7 +766,7 @@ function submitOrder(){
   const orders=getOrders();
   const itemName=selectedDiamond?selectedDiamond.diamonds.toLocaleString()+" Diamonds":(selectedLevelPass?selectedLevelPass.level:selectedPackage.name);
   orders.unshift({
-    id:"MGS-"+Date.now(),package:itemName,price:unit,quantity:effectiveQty,total,uid,date:new Date().toLocaleString(),type:selectedDiamond?"diamond":(selectedLevelPass?"levelPass":"package"),accountEmail:u?u.email:""
+    id:"MGS-"+Date.now(),package:itemName,price:unit,quantity:effectiveQty,total,uid,date:new Date().toLocaleString(),status:"Pending",type:selectedDiamond?"diamond":(selectedLevelPass?"levelPass":"package"),accountEmail:u?u.email:""
   });
   localStorage.setItem("mgsOrders",JSON.stringify(orders));
   localStorage.setItem("mgsWallet",String(wallet-total));
@@ -732,15 +787,63 @@ function renderWallet(){
     el.textContent="এই Order করতে আপনাকে আরও ৳"+required.toLocaleString()+" Deposit করতে হবে।";
   }else if(el){el.remove()}
 }
+function statusBadge(status){
+  const s=String(status||"Pending");
+  const cls=s==="Added"?"status-added":(s==="Rejected"?"status-rejected":"status-pending");
+  return `<span class="status-badge ${cls}">${escapeHtml(s)}</span>`;
+}
+function showOrderHistory(type){
+  if(!isSignedIn()){openAuth("signin");return}
+  const orders=document.getElementById("ordersList");
+  const top=document.getElementById("topupHistoryPanel");
+  const tx=document.getElementById("transactionHistoryPanel");
+  orders.classList.add("hidden");top.classList.add("hidden");tx.classList.add("hidden");
+  if(type==="topup"){
+    renderTopUpHistory();top.classList.remove("hidden");
+  }else{
+    renderTransactionHistory();tx.classList.remove("hidden");
+  }
+}
+function hideOrderHistory(){
+  document.getElementById("ordersList").classList.remove("hidden");
+  document.getElementById("topupHistoryPanel").classList.add("hidden");
+  document.getElementById("transactionHistoryPanel").classList.add("hidden");
+  renderOrders();
+}
 function renderOrders(){
   const el=document.getElementById("ordersList"), orders=getOrders();
   if(!isSignedIn()){el.innerHTML='<div class="empty">Please sign in to view your orders.</div>';return}
   if(!orders.length){el.innerHTML='<div class="empty">No orders yet.</div>';return}
   el.innerHTML=orders.map(o=>`
     <div class="order-item">
-      <strong>${o.package}</strong><br>
-      <span class="small">UID: ${o.uid} · Qty: ${o.quantity} · Total: ৳${o.total}</span><br>
-      <span class="small">${o.date} · ${o.id}</span>
+      <strong>${escapeHtml(o.package)}</strong><br>
+      <span class="small">UID: ${escapeHtml(o.uid)} · Qty: ${o.quantity} · Total: ৳${Number(o.total||0).toLocaleString()}</span><br>
+      <span class="small">${escapeHtml(o.date)} · ${escapeHtml(o.id)}</span><br>
+      ${statusBadge(o.status||"Pending")}
+    </div>`).join("");
+}
+function renderTopUpHistory(){
+  const el=document.getElementById("topupHistoryList"), orders=getOrders();
+  if(!orders.length){el.innerHTML='<div class="history-empty">No Top Up History yet.</div>';return}
+  el.innerHTML=orders.map(o=>`
+    <div class="history-item">
+      <strong>${escapeHtml(o.package)}</strong><br>
+      <span class="small">UID: ${escapeHtml(o.uid)} · Qty: ${o.quantity} · Total: ৳${Number(o.total||0).toLocaleString()}</span><br>
+      <span class="small">${escapeHtml(o.date)} · ${escapeHtml(o.id)}</span><br>
+      ${statusBadge(o.status||"Pending")}
+    </div>`).join("");
+}
+function renderTransactionHistory(){
+  const el=document.getElementById("transactionHistoryList");
+  const list=processDepositTransactions();
+  if(!list.length){el.innerHTML='<div class="history-empty">No Transaction History yet.</div>';return}
+  el.innerHTML=list.map(t=>`
+    <div class="history-item">
+      <strong>৳${Number(t.amount||0).toLocaleString()}</strong> <span class="small">${escapeHtml(t.method||"")}</span><br>
+      <span class="small">Transaction ID: ${escapeHtml(t.txn||"")}</span><br>
+      <span class="small">${escapeHtml(t.date||"")}</span><br>
+      ${statusBadge(t.status||"Pending")}
+      ${t.status==="Added"?'<div class="small" style="margin-top:6px;color:#7ff0c5">Wallet-এ টাকা Added হয়েছে।</div>':t.status==="Rejected"?'<div class="small" style="margin-top:6px;color:#ff9ba6">এই Deposit Reject হয়েছে; Wallet-এ টাকা যোগ হয়নি।</div>':'<div class="small" style="margin-top:6px;color:#ffe38b">Pending থাকলে Wallet-এ টাকা যোগ হবে না।</div>'}
     </div>`).join("");
 }
 
@@ -824,8 +927,14 @@ function verifyDeposit(){
   if(!txn){notice.innerHTML='<div class="error">অনুগ্রহ করে Transaction ID লিখুন।</div>';return}
   if(!/^[A-Za-z0-9]+$/.test(txn)){notice.innerHTML='<div class="error">Transaction ID-তে শুধু letter ও number ব্যবহার করুন।</div>';return}
   notice.innerHTML='<div class="success">Verifying... আপনার Deposit তথ্য Processing হচ্ছে।</div>';
+  const list=getTransactions();
+  list.unshift({id:"TXN-"+Date.now(),amount,method:method.value,txn,date:new Date().toLocaleString(),status:"Pending",credited:false});
+  saveTransactions(list);
   sessionStorage.setItem("mgsPendingDeposit",JSON.stringify({amount,method:method.value,txn,date:new Date().toLocaleString()}));
-  setTimeout(()=>{notice.innerHTML='<div class="success">Deposit request submitted for verification.</div>';},1200);
+  setTimeout(()=>{
+    notice.innerHTML='<div class="success">Deposit request submitted. Status: Pending — Admin verification-এর পর Added বা Rejected হবে।</div>';
+    renderTransactionHistory();
+  },1200);
 }
 function requireAuth(){
   if(!isSignedIn()){openAuth("signin");return false}
@@ -882,6 +991,7 @@ function signUp(){
  localStorage.setItem("mgsSignedIn","true");
  if(!localStorage.getItem("mgsWallet"))localStorage.setItem("mgsWallet","0");
  if(!localStorage.getItem("mgsOrders"))localStorage.setItem("mgsOrders","[]");
+ if(!localStorage.getItem("mgsTransactions"))localStorage.setItem("mgsTransactions","[]");
  closeAuth();updateAuthArea();
  if(sessionStorage.getItem("mgsPendingPage")==="deposit"){sessionStorage.removeItem("mgsPendingPage");showPage("deposit");return}
  if(sessionStorage.getItem("mgsCurrentOrder")){ showPage("order"); restoreOrderState(); } else { showPage("profile"); }
@@ -937,6 +1047,7 @@ function escapeHtml(s){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
+  processDepositTransactions();
   renderPackages();renderDiamondList();renderLevelPasses();updateAuthArea();renderWallet();renderOrders();renderProfile();
   const wanted=location.hash.replace(/^#/,"");
   if(wanted&&document.getElementById(wanted)){
