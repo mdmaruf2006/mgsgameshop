@@ -503,8 +503,10 @@ async function loadPackagesFromSupabase(){
   if(error) throw error; const rows=data||[];
   diamondPackages=rows.filter(p=>String(p.package_type||'').toLowerCase()==='diamond').map(p=>({id:p.id,diamonds:Number(p.diamond_amount||0),price:Number(p.price||0),name:p.name,description:p.description||''})).sort((a,b)=>a.diamonds-b.diamonds||a.id-b.id);
   levelPasses=rows.filter(p=>String(p.package_type||'').toLowerCase().includes('level')).map(p=>({id:p.id,level:p.name,diamonds:Number(p.diamond_amount||0),price:Number(p.price||0),description:p.description||'',sortOrder:Number(p.sort_order||0)})).sort((a,b)=>a.sortOrder-b.sortOrder||a.diamonds-b.diamonds||a.id-b.id);
-  const normal=rows.filter(p=>{const t=String(p.package_type||'').toLowerCase();return t!=='diamond'&&!t.includes('level')}).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||a.id-b.id);
-  packages=[{name:'Diamond List',diamondList:true},...normal.map(p=>({id:p.id,name:p.name,price:Number(p.price||0),description:p.description||''})),{name:'Level UP Pass',levelPassList:true},{name:'Spacial Event',comingSoon:'Spacial Event Coming Soon'},{name:'Airdrop',comingSoon:'Airdrop Coming Soon'}];
+  const normal=rows.filter(p=>{const t=String(p.package_type||'').toLowerCase();return t!=='diamond'&&!t.includes('level')&&t!=='special_event'&&t!=='airdrop'}).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||a.id-b.id);
+  // Keep Special Event and Airdrop available for their existing dedicated area;
+  // do not create extra ৳0 cards in the main package grid.
+  packages=[{name:'Diamond List',diamondList:true},...normal.map(p=>({id:p.id,name:p.name,price:Number(p.price||0),description:p.description||''})),{name:'Level UP Pass',levelPassList:true}];
   renderPackages();renderDiamondList();renderLevelPasses();
  }catch(e){console.error('Supabase package load failed',e);renderPackages();renderDiamondList();renderLevelPasses();}
 }
