@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MGS Games Shop - Admin Panel</title>
+<title>MGS Games Shop - Admin Panel — Final</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d18;color:#fff;font-family:Arial,"Noto Sans Bengali",sans-serif}
@@ -197,33 +197,45 @@ function buildCategories(){
     groups[t]++;
   });
 
-  const labels={
-    weekly_lite:"Weekly Lite Membership",
-    weekly:"Weekly Membership",
-    monthly:"Monthly Membership",
-    level_up:"Level Up Pass",
-    special_event:"Special Event",
-    airdrop:"Airdrop",
-    diamond:"Diamond",
-    diamonds:"Diamond",
-    topup:"Top Up",
-    top_up:"Top Up"
-  };
+  // Main categories are always kept in the fixed Customer Panel structure.
+  // Existing/unknown package types are also shown automatically after them.
+  const fixed=[
+    ["diamond","Diamond List"],
+    ["weekly_lite","Weekly Lite Membership"],
+    ["weekly","Weekly Membership"],
+    ["monthly","Monthly Membership"],
+    ["level_up","Level Up Pass"],
+    ["special_event","Special Event"],
+    ["airdrop","Airdrop"]
+  ];
 
   box.innerHTML="";
-  const types=Object.keys(groups).sort((a,b)=>String(a).localeCompare(String(b)));
-  if(!types.length){
-    box.innerHTML='<div class="notice">packages table-এ কোনো row পাওয়া যায়নি।</div>';
-    return;
-  }
+  const used=new Set();
 
-  types.forEach(type=>{
+  fixed.forEach(([type,label])=>{
+    used.add(type);
+    const aliases=type==="diamond"?["diamond","diamonds"]:[type];
+    const count=aliases.reduce((n,t)=>n+(groups[t]||0),0);
     const b=document.createElement("button");
     b.className="cat";
     b.onclick=()=>openType(type);
-    b.innerHTML="<b>"+esc(labels[type]||prettyType(type))+"</b><span>"+groups[type]+"টি package • type: "+esc(type)+"</span>";
+    b.innerHTML="<b>"+esc(label)+"</b><span>"+(count?count+"টি package":"Category • package পরে যোগ করা যাবে")+"</span>";
     box.appendChild(b);
   });
+
+  // Preserve every other package type already present in Supabase.
+  Object.keys(groups).sort((a,b)=>String(a).localeCompare(String(b))).forEach(type=>{
+    if(used.has(type) || (type==="diamonds")) return;
+    const b=document.createElement("button");
+    b.className="cat";
+    b.onclick=()=>openType(type);
+    b.innerHTML="<b>"+esc(prettyType(type))+"</b><span>"+groups[type]+"টি package • type: "+esc(type)+"</span>";
+    box.appendChild(b);
+  });
+
+  if(!box.children.length){
+    box.innerHTML='<div class="notice">packages table-এ কোনো row পাওয়া যায়নি।</div>';
+  }
 }
 
 function prettyType(t){
@@ -245,7 +257,7 @@ function openType(type){
   document.getElementById("home").classList.add("hidden");
   document.getElementById("categoryPage").classList.remove("hidden");
   document.getElementById("categoryTitle").textContent=prettyType(type);
-  document.getElementById("categoryInfo").textContent="package_type = "+type+" • Diamond/Reward অনুযায়ী serial";
+  document.getElementById("categoryInfo").textContent=(type==="diamond"?"Diamond List • package_type = diamond / diamonds":"package_type = "+type)+" • Diamond/Reward অনুযায়ী serial";
   document.getElementById("searchBox").value="";
   hideAddForm(); render();
 }
@@ -259,7 +271,9 @@ function goHome(){
 function getVisiblePackages(){
   let data=currentMode==="all"
     ? [...allPackages]
-    : allPackages.filter(p=>(p.package_type||"unknown").trim()===currentType);
+    : (currentType==="diamond"
+      ? allPackages.filter(p=>["diamond","diamonds"].includes((p.package_type||"unknown").trim()))
+      : allPackages.filter(p=>(p.package_type||"unknown").trim()===currentType));
 
   // Primary rule: lower Diamond/Reward first.
   // Secondary rule: existing sort_order, then id.
