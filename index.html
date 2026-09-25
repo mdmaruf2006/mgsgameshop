@@ -155,6 +155,17 @@ main{min-height:calc(100vh - 78px)}
 .qty{display:flex;align-items:center;gap:15px;margin:18px 0}
 .qty button{width:40px;height:40px;border-radius:8px;border:1px solid var(--line);background:#121c2f;color:#fff;font-size:22px}
 .total{font-size:23px;font-weight:900;color:var(--gold);margin:18px 0}
+
+.deposit-method-card{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.deposit-method-card>div{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:16px}
+.deposit-number{display:flex;align-items:center;gap:10px;margin-top:10px;word-break:break-all}
+.deposit-number span{flex:1;color:var(--gold2);font-weight:900}
+.deposit-number button{border:1px solid var(--line);background:#151f33;color:#fff;padding:8px 12px;border-radius:8px;font-weight:800}
+.deposit-warning{background:#25180a;border:1px solid #6a4b16;color:#ffe6a1;border-radius:12px;padding:14px;line-height:1.65;margin:16px 0}
+.payment-options{display:flex;gap:14px;flex-wrap:wrap}
+.payment-options label{flex:1;min-width:140px;border:1px solid var(--line);background:#0b1220;border-radius:10px;padding:13px;font-weight:800}
+.payment-options input{accent-color:var(--gold);margin-right:8px}
+@media(max-width:700px){.deposit-method-card{grid-template-columns:1fr}}
 .primary-action{
   width:100%;border:0;border-radius:10px;padding:14px;background:var(--gold);
   color:#111;font-weight:900
@@ -364,8 +375,42 @@ main{min-height:calc(100vh - 78px)}
         <div class="small">Current Balance</div>
         <div class="balance" id="walletBalance">৳0</div>
         <p class="status">● Wallet Active</p>
-        <button class="action" onclick="requireAuth('wallet')">Add Money / Deposit</button>
+        <button class="action" onclick="openDeposit()">Add Money / Deposit</button>
         <div class="notice">Wallet deposit functionality is protected by your account sign-in.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="deposit" class="page">
+    <div class="container">
+      <div class="order-box">
+        <button class="back" onclick="showPage('wallet')">← Back to Wallet</button>
+        <div class="card">
+          <h2 class="page-title" style="font-size:28px">Add Money / Deposit</h2>
+          <div class="deposit-method-card">
+            <div><strong>বিকাশ Personal</strong><div class="deposit-number"><span>01751439881</span><button type="button" onclick="copyDepositNumber('01751439881',this)">Copy</button></div></div>
+            <div><strong>নগদ Personal</strong><div class="deposit-number"><span>01751439881</span><button type="button" onclick="copyDepositNumber('01751439881',this)">Copy</button></div></div>
+          </div>
+          <div class="deposit-warning"><b>নোট:</b> অবশ্যই <b>Send Money</b> করতে হবে। ভুল করে Cash Out বা Mobile Recharge করলে সেই টাকা গ্রহণযোগ্য হবে না। ভুল নাম্বারে টাকা পাঠালেও সেই টাকা গ্রহণযোগ্য হবে না।</div>
+          <div class="field">
+            <label>কত টাকা পাঠিয়েছেন?</label>
+            <input id="depositAmount" type="number" min="25" step="1" inputmode="numeric" placeholder="Minimum ৳25">
+            <div class="small">Minimum Deposit: <b>৳25</b></div>
+          </div>
+          <div class="field">
+            <label>Payment Method</label>
+            <div class="payment-options">
+              <label><input type="radio" name="depositMethod" value="bKash"> bKash</label>
+              <label><input type="radio" name="depositMethod" value="Nagad"> Nagad</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Transaction ID</label>
+            <input id="depositTxn" type="text" maxlength="64" autocomplete="off" placeholder="Enter Transaction ID">
+          </div>
+          <div id="depositNotice"></div>
+          <button class="primary-action" onclick="verifyDeposit()">Verify</button>
+        </div>
       </div>
     </div>
   </section>
@@ -755,6 +800,33 @@ function closeMobileMenu(){
   if(toggle){toggle.classList.remove("open");toggle.setAttribute("aria-expanded","false")}
 }
 
+
+function openDeposit(){
+  if(!isSignedIn()){sessionStorage.setItem("mgsPendingPage","deposit");openAuth("signin");return}
+  showPage("deposit");
+}
+function copyDepositNumber(number,button){
+  const done=()=>{const old=button.textContent;button.textContent="Copied";setTimeout(()=>button.textContent=old,1200)};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(number).then(done).catch(()=>fallbackCopy(number,done));}
+  else fallbackCopy(number,done);
+}
+function fallbackCopy(text,done){
+  const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}finally{ta.remove()}
+}
+function verifyDeposit(){
+  const amount=Number(document.getElementById("depositAmount").value||0);
+  const method=document.querySelector('input[name="depositMethod"]:checked');
+  const txn=document.getElementById("depositTxn").value.trim();
+  const notice=document.getElementById("depositNotice");
+  if(!amount){notice.innerHTML='<div class="error">অনুগ্রহ করে কত টাকা পাঠিয়েছেন তা লিখুন।</div>';return}
+  if(amount<25){notice.innerHTML='<div class="error">Minimum Deposit ৳25। ৳25-এর কম গ্রহণযোগ্য নয়।</div>';return}
+  if(!method){notice.innerHTML='<div class="error">অনুগ্রহ করে bKash অথবা Nagad একটি Payment Method নির্বাচন করুন।</div>';return}
+  if(!txn){notice.innerHTML='<div class="error">অনুগ্রহ করে Transaction ID লিখুন।</div>';return}
+  if(!/^[A-Za-z0-9]+$/.test(txn)){notice.innerHTML='<div class="error">Transaction ID-তে শুধু letter ও number ব্যবহার করুন।</div>';return}
+  notice.innerHTML='<div class="success">Verifying... আপনার Deposit তথ্য Processing হচ্ছে।</div>';
+  sessionStorage.setItem("mgsPendingDeposit",JSON.stringify({amount,method:method.value,txn,date:new Date().toLocaleString()}));
+  setTimeout(()=>{notice.innerHTML='<div class="success">Deposit request submitted for verification.</div>';},1200);
+}
 function requireAuth(){
   if(!isSignedIn()){openAuth("signin");return false}
   return true;
@@ -796,6 +868,7 @@ function signIn(){
    msg.innerHTML='<div class="error">Invalid email or password.</div>';return
  }
  localStorage.setItem("mgsSignedIn","true");closeAuth();updateAuthArea();renderProfile();
+  if(sessionStorage.getItem("mgsPendingPage")==="deposit"){sessionStorage.removeItem("mgsPendingPage");showPage("deposit");return}
   if(sessionStorage.getItem("mgsCurrentOrder")){ showPage("order"); restoreOrderState(); }
 }
 function signUp(){
@@ -810,6 +883,7 @@ function signUp(){
  if(!localStorage.getItem("mgsWallet"))localStorage.setItem("mgsWallet","0");
  if(!localStorage.getItem("mgsOrders"))localStorage.setItem("mgsOrders","[]");
  closeAuth();updateAuthArea();
+ if(sessionStorage.getItem("mgsPendingPage")==="deposit"){sessionStorage.removeItem("mgsPendingPage");showPage("deposit");return}
  if(sessionStorage.getItem("mgsCurrentOrder")){ showPage("order"); restoreOrderState(); } else { showPage("profile"); }
 }
 function forgotPassword(){
