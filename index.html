@@ -490,95 +490,32 @@ main{min-height:calc(100vh - 78px)}
   </div>
 </div>
 
-<!-- Supabase -->
+<!-- MGS SUPABASE DYNAMIC PACKAGE SYSTEM -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-  const SUPABASE_URL = "https://qyaagwehhyvaqmuvpsql.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_LkZ_IkopEp_vNs1mc1noxA_LXCvk_D8";
-
-  const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-</script>
-
-<script>
-let packages = [
-  {name:"Diamond List",diamondList:true},
-  {name:"Weekly Lite Membership",price:45},
-  {name:"Weekly Membership",price:158},
-  {name:"Monthly Membership",price:790},
-  {name:"Level UP Pass",levelPassList:true},
-  {name:"Spacial Event",comingSoon:"Spacial Event Coming Soon"},
-  {name:"Airdrop",comingSoon:"Airdrop Coming Soon"}
- ];
-
-const diamondPackages = [
-  {diamonds:25,price:25},{diamonds:50,price:45},{diamonds:115,price:80},{diamonds:240,price:160},
-  {diamonds:355,price:240},{diamonds:480,price:320},{diamonds:610,price:400},{diamonds:725,price:480},
-  {diamonds:850,price:560},{diamonds:965,price:640},{diamonds:1090,price:720},{diamonds:1240,price:800},
-  {diamonds:1355,price:880},{diamonds:1480,price:960},{diamonds:1595,price:1040},{diamonds:1720,price:1120},
-  {diamonds:1850,price:1200},{diamonds:1965,price:1280},{diamonds:2090,price:1360},{diamonds:2205,price:1440},
-  {diamonds:2330,price:1520},{diamonds:2530,price:1600},{diamonds:3010,price:1920},{diamonds:4010,price:2560},
-  {diamonds:5060,price:3200},{diamonds:6025,price:3840}
-].sort((a,b)=>a.diamonds-b.diamonds);
-
-const levelPasses = [
-  {level:"06 Level",diamonds:120,price:60},
-  {level:"10 Level",diamonds:200,price:80},
-  {level:"15 Level",diamonds:200,price:80},
-  {level:"20 Level",diamonds:200,price:80},
-  {level:"25 Level",diamonds:200,price:80},
-  {level:"30 Level",diamonds:350,price:120},
-  {level:"Fully 6 Packs",diamonds:1270,price:480}
-];
-
+const SUPABASE_URL="https://qyaagwehhyvaqmuvpsql.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_LkZ_IkopEp_vNs1mc1noxA_LXCvk_D8";
+const mgsSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let packages=[],diamondPackages=[],levelPasses=[];
 async function loadPackagesFromSupabase(){
-  try{
-    if(typeof supabase==="undefined") return false;
-    const {data,error}=await supabase
-      .from("packages")
-      .select("id,name,package_type,price,diamond_amount,is_active,sort_order")
-      .eq("is_active",true)
-      .order("sort_order",{ascending:true});
-    if(error) throw error;
-    const rows=Array.isArray(data)?data:[];
-
-    const dbDiamonds=rows
-      .filter(r=>r.package_type==="diamond")
-      .map(r=>({diamonds:Number(r.diamond_amount)||0,price:Number(r.price)||0,id:r.id}))
-      .filter(r=>r.diamonds>0)
-      .sort((a,b)=>a.diamonds-b.diamonds);
-
-    const dbLevelPasses=rows
-      .filter(r=>r.package_type==="level_up")
-      .map(r=>({level:r.name,diamonds:Number(r.diamond_amount)||0,price:Number(r.price)||0,id:r.id}))
-      .sort((a,b)=>(Number(a.id)||0)-(Number(b.id)||0));
-
-    const dbPackages=[];
-    dbPackages.push({name:"Diamond List",diamondList:true});
-    rows.filter(r=>["weekly_lite","weekly","monthly"].includes(r.package_type))
-      .forEach(r=>dbPackages.push({name:r.name,price:Number(r.price)||0,id:r.id}));
-    dbPackages.push({name:"Level UP Pass",levelPassList:true});
-    const special=rows.find(r=>r.package_type==="special_event");
-    const airdrop=rows.find(r=>r.package_type==="airdrop");
-    if(special) dbPackages.push({name:special.name,comingSoon:"Spacial Event Coming Soon",id:special.id});
-    if(airdrop) dbPackages.push({name:airdrop.name,comingSoon:"Airdrop Coming Soon",id:airdrop.id});
-
-    if(dbDiamonds.length) diamondPackages.splice(0,diamondPackages.length,...dbDiamonds);
-    if(dbLevelPasses.length) levelPasses.splice(0,levelPasses.length,...dbLevelPasses);
-    if(dbPackages.length>1) packages=dbPackages;
-
-    renderPackages();
-    renderDiamondList();
-    renderLevelPasses();
-    return true;
-  }catch(err){
-    console.error("Supabase packages load failed:",err);
-    return false;
-  }
+ try{
+  const {data,error}=await mgsSupabase.from("packages").select("id,name,package_type,price,description,diamond_amount,is_active,sort_order").eq("is_active",true);
+  if(error) throw error; const rows=data||[];
+  diamondPackages=rows.filter(p=>String(p.package_type||'').toLowerCase()==='diamond').map(p=>({id:p.id,diamonds:Number(p.diamond_amount||0),price:Number(p.price||0),name:p.name,description:p.description||''})).sort((a,b)=>a.diamonds-b.diamonds||a.id-b.id);
+  levelPasses=rows.filter(p=>String(p.package_type||'').toLowerCase().includes('level')).map(p=>({id:p.id,level:p.name,diamonds:Number(p.diamond_amount||0),price:Number(p.price||0),description:p.description||'',sortOrder:Number(p.sort_order||0)})).sort((a,b)=>a.sortOrder-b.sortOrder||a.diamonds-b.diamonds||a.id-b.id);
+  const normal=rows.filter(p=>{const t=String(p.package_type||'').toLowerCase();return t!=='diamond'&&!t.includes('level')}).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||a.id-b.id);
+  packages=[{name:'Diamond List',diamondList:true},...normal.map(p=>({id:p.id,name:p.name,price:Number(p.price||0),description:p.description||''})),{name:'Level UP Pass',levelPassList:true},{name:'Spacial Event',comingSoon:'Spacial Event Coming Soon'},{name:'Airdrop',comingSoon:'Airdrop Coming Soon'}];
+  renderPackages();renderDiamondList();renderLevelPasses();
+ }catch(e){console.error('Supabase package load failed',e);renderPackages();renderDiamondList();renderLevelPasses();}
 }
+</script>
+<!-- END MGS SUPABASE DYNAMIC PACKAGE SYSTEM -->
+
+<script>
+// Package data is loaded dynamically from Supabase.
+let packages=[];
+let diamondPackages=[];
+let levelPasses=[];
 
 let selectedPackage=null, selectedDiamond=null, selectedLevelPass=null, selectedOrderType=null, qty=1, authMode="signin";
 
@@ -1105,11 +1042,10 @@ function escapeHtml(s){
  return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
 
-document.addEventListener("DOMContentLoaded",async()=>{
+document.addEventListener("DOMContentLoaded",()=>{
   processDepositTransactions();
-  renderPackages();renderDiamondList();renderLevelPasses();
-  await loadPackagesFromSupabase();
-  updateAuthArea();renderWallet();renderOrders();renderProfile();
+  renderPackages();renderDiamondList();renderLevelPasses();updateAuthArea();
+  loadPackagesFromSupabase();renderWallet();renderOrders();renderProfile();
   const wanted=location.hash.replace(/^#/,"");
   if(wanted&&document.getElementById(wanted)){
     if(wanted==="order" && restoreOrderState()) showPage("order");
