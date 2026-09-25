@@ -4,174 +4,157 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MGS Games Shop - Admin Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d18;color:#fff;font-family:Arial,"Noto Sans Bengali",sans-serif}
-button,input{font:inherit}button{cursor:pointer}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
 .top{background:#0d1424;border-bottom:1px solid #263653;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
 .brand{font-size:20px;font-weight:800}.logout{background:#ef4444;color:#fff;border:0;border-radius:9px;padding:9px 13px}
-.wrap{max-width:1150px;margin:auto;padding:20px}
-.card{background:#111a2d;border:1px solid #293b60;border-radius:16px;padding:20px;margin-bottom:18px}
+.wrap{max-width:1150px;margin:auto;padding:20px}.card{background:#111a2d;border:1px solid #293b60;border-radius:16px;padding:20px;margin-bottom:18px}
 h1,h2,h3{margin-top:0}.muted{color:#95a4bf;font-size:13px}
 .login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .loginbox{width:100%;max-width:400px;background:#111a2d;border:1px solid #30446d;border-radius:18px;padding:25px}
 .loginbox h2{text-align:center}.loginbox p{text-align:center;color:#9eabc4}
 label{display:block;color:#b8c4da;font-size:13px;margin:12px 0 6px}
-input{width:100%;padding:11px 12px;background:#091222;border:1px solid #34486f;color:#fff;border-radius:9px;outline:none}
-.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700}.primary{background:#5b7cff;color:#fff}.success{background:#22c55e;color:#07120c}.danger{background:#ef4444;color:#fff}.dark{background:#273754;color:#fff}
+input,textarea,select{width:100%;padding:11px 12px;background:#091222;border:1px solid #34486f;color:#fff;border-radius:9px;outline:none}
+textarea{min-height:80px;resize:vertical}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700}.primary{background:#5b7cff;color:#fff}.success{background:#22c55e;color:#07120c}.danger{background:#ef4444;color:#fff}.dark{background:#273754;color:#fff}
 .full{width:100%;margin-top:15px}.error{color:#ff7777;text-align:center;margin-top:10px;font-size:13px}
-.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.cat{background:#172541;border:1px solid #31476f;border-radius:14px;padding:20px;text-align:left;color:#fff;min-height:90px}
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cat{background:#172541;border:1px solid #31476f;border-radius:14px;padding:20px;text-align:left;color:#fff;min-height:90px}
 .cat:hover{border-color:#6d8cff;background:#1b2c4d}.cat b{display:block;font-size:17px;margin-bottom:6px}.cat span{color:#91a2bf;font-size:12px}
-.back{margin-bottom:15px}.hidden{display:none!important}
-.package{background:#0b1323;border:1px solid #293b5c;border-radius:12px;padding:14px;margin-top:11px}
+.back{margin-bottom:15px}.hidden{display:none!important}.package{background:#0b1323;border:1px solid #293b5c;border-radius:12px;padding:14px;margin-top:11px}
 .package-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.package-name{font-weight:700}.package-info{color:#a9b7ce;font-size:13px;margin-top:5px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions .btn{width:auto}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions .btn{width:auto}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .notice{background:#172541;color:#b9c8e5;padding:10px;border-radius:9px;font-size:12px;margin-top:12px}
+.status{margin-top:12px;padding:10px;border-radius:9px;background:#172541;color:#b9c8e5;font-size:12px}
 @media(max-width:700px){.categories{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.wrap{padding:12px}.brand{font-size:16px}}
 @media(max-width:430px){.categories{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<div id="login" class="login">
- <div class="loginbox">
-  <h2>🎮 MGS Games Shop</h2>
-  <p>Admin Panel Login</p>
-  <label>Admin Password</label>
-  <input id="adminPass" type="password" placeholder="Enter your password">
-  <button class="btn primary full" onclick="login()">Login to Admin Panel</button>
-  <div id="loginError" class="error"></div>
- </div>
-</div>
+<div id="login" class="login"><div class="loginbox">
+<h2>🎮 MGS Games Shop</h2><p>Admin Panel Login</p>
+<label>Admin Password</label><input id="adminPass" type="password" placeholder="Enter your password">
+<button class="btn primary full" onclick="login()">Login to Admin Panel</button><div id="loginError" class="error"></div>
+</div></div>
 
 <div id="panel" class="hidden">
-<header class="top">
- <div class="brand">🎮 MGS Games Shop — Admin</div>
- <button class="logout" onclick="logout()">Logout</button>
-</header>
-
+<header class="top"><div class="brand">🎮 MGS Games Shop — Admin</div><button class="logout" onclick="logout()">Logout</button></header>
 <main class="wrap">
- <section id="home" class="card">
-  <h2>Package Management</h2>
-  <p class="muted">নিচের একটি category-তে ঢুকে সেই category-এর package list দেখুন বা নতুন package যোগ করুন।</p>
-  <div class="categories">
-   <button class="cat" onclick="openCategory('weeklylite')"><b>Weekly Lite Membership</b><span>Package list</span></button>
-   <button class="cat" onclick="openCategory('weekly')"><b>Weekly Membership</b><span>Package list</span></button>
-   <button class="cat" onclick="openCategory('monthly')"><b>Monthly Membership</b><span>Package list</span></button>
-   <button class="cat" onclick="openCategory('levelup')"><b>Level Up Pass</b><span>Package list</span></button>
-   <button class="cat" onclick="openCategory('event')"><b>Special Event</b><span>Package list</span></button>
-   <button class="cat" onclick="openCategory('airdrop')"><b>Airdrop</b><span>Package list</span></button>
-  </div>
-  <div class="notice">এখানে category button-এ কোনো দাম দেখানো হচ্ছে না। দাম/diamond শুধু ভিতরের package-এ থাকবে।</div>
- </section>
-
- <section id="categoryPage" class="card hidden">
-  <button class="btn dark back" onclick="goHome()">← Back to Categories</button>
-  <h2 id="categoryTitle"></h2>
-  <p class="muted">এই category-এর package list</p>
-  <div id="packageList"></div>
-  <div class="actions">
-   <button class="btn success" onclick="showAddForm()">+ Add Package</button>
-  </div>
-  <div id="addForm" class="package hidden">
-   <h3>New Package</h3>
-   <label>Package Name</label><input id="newName" placeholder="Package name">
-   <div class="row">
-    <div><label>Diamond / Reward</label><input id="newReward" placeholder="যেমন 80 Diamonds"></div>
-    <div><label>Price (৳)</label><input id="newPrice" placeholder="যেমন 45"></div>
-   </div>
-   <div class="actions">
-    <button class="btn success" onclick="addPackage()">Add Package</button>
-    <button class="btn dark" onclick="hideAddForm()">Cancel</button>
-   </div>
-  </div>
- </section>
-
- <section class="card">
-  <h2>💳 Payment Settings</h2>
-  <p class="muted">bKash/Nagad customer payment number</p>
-  <div class="row">
-   <div><label>bKash Personal Number</label><input id="bkash" placeholder="01XXXXXXXXX"></div>
-   <div><label>Nagad Personal Number</label><input id="nagad" placeholder="01XXXXXXXXX"></div>
-  </div>
-  <button class="btn success" style="margin-top:14px" onclick="savePayment()">Save Changes</button>
- </section>
-
- <section class="card">
-  <h2>🧾 Orders</h2>
-  <p class="muted">Customer orders management</p>
-  <div class="notice">Orders-এর real-time data চালাতে backend/database প্রয়োজন।</div>
- </section>
-
- <section class="card">
-  <h2>👥 Customers</h2>
-  <p class="muted">Customer management</p>
-  <div class="notice">Customers-এর real-time data চালাতে backend/database প্রয়োজন।</div>
- </section>
-</main>
+<section id="home" class="card">
+<h2>Package Management</h2><p class="muted">নিচের category-তে ঢুকে Supabase থেকে package list দেখুন এবং নতুন package যোগ করুন।</p>
+<div class="categories">
+<button class="cat" onclick="openCategory('weeklylite')"><b>Weekly Lite Membership</b><span>Package list</span></button>
+<button class="cat" onclick="openCategory('weekly')"><b>Weekly Membership</b><span>Package list</span></button>
+<button class="cat" onclick="openCategory('monthly')"><b>Monthly Membership</b><span>Package list</span></button>
+<button class="cat" onclick="openCategory('levelup')"><b>Level Up Pass</b><span>Package list</span></button>
+<button class="cat" onclick="openCategory('event')"><b>Special Event</b><span>Package list</span></button>
+<button class="cat" onclick="openCategory('airdrop')"><b>Airdrop</b><span>Package list</span></button>
 </div>
+<div class="notice">এই Panel এখন packages table-এর data ব্যবহার করবে।</div>
+<div id="connectionStatus" class="status">Supabase connection পরীক্ষা করা হচ্ছে...</div>
+</section>
+
+<section id="categoryPage" class="card hidden">
+<button class="btn dark back" onclick="goHome()">← Back to Categories</button>
+<h2 id="categoryTitle"></h2><p class="muted">এই category-এর Supabase package list</p>
+<div id="packageList"></div>
+<div class="actions"><button class="btn success" onclick="showAddForm()">+ Add Package</button></div>
+<div id="addForm" class="package hidden">
+<h3>New Package</h3>
+<label>Package Name</label><input id="newName" placeholder="Package name">
+<div class="row">
+<div><label>Diamond / Reward</label><input id="newReward" type="number" min="0" placeholder="যেমন 80"></div>
+<div><label>Price (৳)</label><input id="newPrice" type="number" min="0" placeholder="যেমন 45"></div>
+</div>
+<label>Description (optional)</label><textarea id="newDescription" placeholder="Optional description"></textarea>
+<div class="actions">
+<button class="btn success" onclick="addPackage()">Add Package</button><button class="btn dark" onclick="hideAddForm()">Cancel</button>
+</div>
+</div>
+</section>
+
+<section class="card"><h2>💳 Payment Settings</h2><p class="muted">Payment settings-এর জন্য পরে আলাদা Supabase table connect করা হবে।</p>
+<div class="notice">বর্তমানে bKash/Nagad localStorage-এ ছিল। এই ধাপে packages connection করা হচ্ছে; payment table না বানিয়ে payment data পরিবর্তন করছি না।</div>
+</section>
+
+<section class="card"><h2>🧾 Orders</h2><p class="muted">Customer orders management</p><div class="notice">Orders table ইতিমধ্যে আছে। পরের ধাপে এই panel-এ orders দেখানো ও manage করা হবে।</div></section>
+<section class="card"><h2>👥 Customers</h2><p class="muted">Customer management</p><div class="notice">Customers table ইতিমধ্যে আছে। পরের ধাপে এই panel-এ customers দেখানো হবে।</div></section>
+</main></div>
 
 <script>
 const ADMIN_PASSWORD="MARUF@18334341";
+const SUPABASE_URL="https://qyaagwehhyvaqmuvpsql.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_LkZ_IkopEp_vNs1mc1noxA_LXCvk_D8";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
 const names={weeklylite:"Weekly Lite Membership",weekly:"Weekly Membership",monthly:"Monthly Membership",levelup:"Level Up Pass",event:"Special Event",airdrop:"Airdrop"};
-const defaults={
- weeklylite:[{name:"Weekly Lite Membership",reward:"80 Diamonds",price:"45"}],
- weekly:[
-  {name:"Weekly Lite Membership",reward:"80 Diamonds",price:"45"},
-  {name:"Weekly Membership",reward:"450 Diamonds",price:"190"}
- ],
- monthly:[{name:"Monthly Membership",reward:"2600 Diamonds",price:"750"}],
- levelup:[{name:"Level Up Pass",reward:"Special Reward",price:"170"}],
- event:[{name:"Special Event",reward:"Event Package",price:"99"}],
- airdrop:[{name:"Airdrop",reward:"Limited Package",price:"60"}]
-};
+const types={weeklylite:"weekly_lite",weekly:"weekly",monthly:"monthly",levelup:"level_up",event:"special_event",airdrop:"airdrop"};
 let current="weekly";
 
 function login(){
  if(document.getElementById("adminPass").value===ADMIN_PASSWORD){
   document.getElementById("login").classList.add("hidden");
   document.getElementById("panel").classList.remove("hidden");
-  loadPayment();
+  testConnection();
  }else document.getElementById("loginError").textContent="আপনার পাসওয়ার্ডটি সঠিক নয়।";
 }
 function logout(){location.reload()}
-function key(k){return "mgs_"+k+"_packages"}
-function getPackages(k){
- try{let x=JSON.parse(localStorage.getItem(key(k)));return Array.isArray(x)?x:defaults[k].map(x=>({...x}))}catch(e){return defaults[k].map(x=>({...x}))}
+async function testConnection(){
+ const s=document.getElementById("connectionStatus");
+ try{
+  const {count,error}=await supabaseClient.from("packages").select("id",{count:"exact",head:true});
+  if(error) throw error;
+  s.textContent="✅ Supabase connected — packages table-এ "+(count??0)+"টি row আছে।";
+ }catch(e){s.textContent="❌ Supabase connection/RLS error: "+(e.message||e)}
 }
-function saveList(k,a){localStorage.setItem(key(k),JSON.stringify(a))}
 function openCategory(k){
- current=k;
- document.getElementById("home").classList.add("hidden");
- document.getElementById("categoryPage").classList.remove("hidden");
- document.getElementById("categoryTitle").textContent=names[k]+" Packages";
- hideAddForm();render();
+ current=k;document.getElementById("home").classList.add("hidden");document.getElementById("categoryPage").classList.remove("hidden");
+ document.getElementById("categoryTitle").textContent=names[k]+" Packages";hideAddForm();render();
 }
 function goHome(){document.getElementById("categoryPage").classList.add("hidden");document.getElementById("home").classList.remove("hidden")}
-function render(){
- const box=document.getElementById("packageList"),a=getPackages(current);box.innerHTML="";
- if(!a.length){box.innerHTML='<div class="notice">এই category-তে এখন কোনো package নেই। + Add Package চাপুন।</div>';return}
- a.forEach((p,i)=>{
-  box.innerHTML+=`<div class="package">
-   <div class="package-head"><span class="package-name">${esc(p.name)}</span><button class="btn danger" onclick="removePackage(${i})">Delete</button></div>
-   <div class="package-info">${esc(p.reward)}${p.price!==""?" • ৳"+esc(p.price):""}</div>
-  </div>`;
- });
+async function render(){
+ const box=document.getElementById("packageList");box.innerHTML='<div class="notice">Loading...</div>';
+ try{
+  const {data,error}=await supabaseClient.from("packages").select("id,name,package_type,price,description,diamond_amount,is_active,sort_order").eq("package_type",types[current]).order("sort_order",{ascending:true}).order("id",{ascending:true});
+  if(error) throw error;
+  box.innerHTML="";
+  if(!data.length){box.innerHTML='<div class="notice">এই category-তে কোনো package নেই। + Add Package চাপুন।</div>';return}
+  data.forEach(p=>{
+   box.innerHTML+=`<div class="package">
+    <div class="package-head"><span class="package-name">${esc(p.name)}</span><button class="btn danger" onclick="removePackage(${p.id})">Delete</button></div>
+    <div class="package-info">Diamond/Reward: ${esc(p.diamond_amount??0)}${p.price!==null&&p.price!==undefined?" • ৳"+esc(p.price):""}${p.is_active?" • Active":" • Inactive"}</div>
+    ${p.description?`<div class="package-info">${esc(p.description)}</div>`:""}
+   </div>`;
+  });
+ }catch(e){box.innerHTML='<div class="notice">❌ Data load failed: '+esc(e.message||e)+'</div>'}
 }
 function showAddForm(){document.getElementById("addForm").classList.remove("hidden")}
 function hideAddForm(){document.getElementById("addForm").classList.add("hidden")}
-function addPackage(){
- const name=document.getElementById("newName").value.trim(),reward=document.getElementById("newReward").value.trim(),price=document.getElementById("newPrice").value.trim();
+async function addPackage(){
+ const name=document.getElementById("newName").value.trim();
+ const rewardRaw=document.getElementById("newReward").value.trim();
+ const priceRaw=document.getElementById("newPrice").value.trim();
+ const description=document.getElementById("newDescription").value.trim();
  if(!name){alert("Package Name দিন");return}
- const a=getPackages(current);a.push({name,reward,price});saveList(current,a);
- document.getElementById("newName").value="";document.getElementById("newReward").value="";document.getElementById("newPrice").value="";
- hideAddForm();render();
+ const reward=rewardRaw===""?0:Number(rewardRaw),price=priceRaw===""?0:Number(priceRaw);
+ if(!Number.isInteger(reward)||!Number.isInteger(price)||reward<0||price<0){alert("Diamond/Reward ও Price-এ সঠিক সংখ্যা দিন");return}
+ const {data:lastRows,error:lastError}=await supabaseClient.from("packages").select("sort_order").eq("package_type",types[current]).order("sort_order",{ascending:false}).limit(1);
+ if(lastError){alert("Sort order নেওয়া যায়নি: "+lastError.message);return}
+ const sortOrder=(lastRows&&lastRows.length?Number(lastRows[0].sort_order)||0:0)+1;
+ const {error}=await supabaseClient.from("packages").insert({
+  name,package_type:types[current],price,description:description||null,diamond_amount:reward,is_active:true,sort_order:sortOrder
+ });
+ if(error){alert("Add failed: "+error.message);return}
+ document.getElementById("newName").value="";document.getElementById("newReward").value="";document.getElementById("newPrice").value="";document.getElementById("newDescription").value="";
+ hideAddForm();await render();await testConnection();
 }
-function removePackage(i){const a=getPackages(current);a.splice(i,1);saveList(current,a);render()}
-function savePayment(){localStorage.setItem("mgs_bkash",document.getElementById("bkash").value.trim());localStorage.setItem("mgs_nagad",document.getElementById("nagad").value.trim());alert("Payment settings এই browser-এ save হয়েছে।")}
-function loadPayment(){document.getElementById("bkash").value=localStorage.getItem("mgs_bkash")||"";document.getElementById("nagad").value=localStorage.getItem("mgs_nagad")||""}
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+async function removePackage(id){
+ if(!confirm("এই package delete করতে চান?"))return;
+ const {error}=await supabaseClient.from("packages").delete().eq("id",id);
+ if(error){alert("Delete failed: "+error.message);return}
+ await render();await testConnection();
+}
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 document.getElementById("adminPass").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 </script>
 </body>
