@@ -625,7 +625,7 @@ function changeQty(n){
 }
 function updateOrderTotal(){
   document.getElementById("qtyValue").textContent=qty;
-  const unit=selectedDiamond?selectedDiamond.price:(selectedPackage?selectedPackage.price:null);
+  const unit=selectedDiamond?selectedDiamond.price:(selectedLevelPass?selectedLevelPass.price:(selectedPackage?selectedPackage.price:null));
   if(unit!==null){
     const multiplier=selectedOrderType==="levelPass"?1:qty;
     document.getElementById("orderTotal").textContent="Total: ৳"+(unit*multiplier).toLocaleString();
